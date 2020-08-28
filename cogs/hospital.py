@@ -37,7 +37,7 @@ class Hospital(Cog):
             elif res.status_code == 5000:
                 await ctx.send("API Error")
         else:
-            await ctx.send("명령어 사용법 : ``{prefix}병원 [시/도] [시/군/구]``".format(prefix="!"))
+            await ctx.send("명령어 사용법 : ``{prefix}병원 [시/도] [시/군/구]``".format(prefix=ctx.prefix))
 
 
 def setup(bot: CovidBot):
