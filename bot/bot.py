@@ -3,7 +3,7 @@ from discord.ext.commands import AutoShardedBot
 import logging
 
 class CovidBot(AutoShardedBot):
-    name: str = "CovidBot"
+    name = "CovidBot"
     def __init__(self, *args, **kwargs):
         kwargs.setdefault("command_prefix", "!")
         super().__init__(*args, help_command=None, **kwargs)
