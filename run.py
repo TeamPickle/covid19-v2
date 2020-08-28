@@ -5,6 +5,9 @@ from bot import CovidBot
 dotenv.load_dotenv()
 
 extension_base = "cogs."
+extensions = [
+    "help"
+]
 
 bot = CovidBot()
 
