@@ -14,8 +14,10 @@ class PickleDB(MongoClient):
         self.logger.addHandler(handler)
 
         self.logger.setLevel('DEBUG')
+
+        self.__connect()
     
-    def connect(self):
+    def __connect(self):
         DB_FULL = os.getenv("DB_FULL")
         if not DB_FULL:
             DB_FULL = "mongodb://%s:%s@%s:%s/%s?authSource=admin" % (
