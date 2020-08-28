@@ -1,6 +1,7 @@
 from discord import Game
 from discord.ext.commands import AutoShardedBot
 import logging
+from db import PickleDB
 
 class CovidBot(AutoShardedBot):
     name = "CovidBot"
@@ -17,6 +18,8 @@ class CovidBot(AutoShardedBot):
         self.logger.addHandler(handler)
 
         self.logger.setLevel('DEBUG')
+
+        self.pickle_db = PickleDB()
 
     def get_logger(self, cog):
         name = cog.__class__.__name__
