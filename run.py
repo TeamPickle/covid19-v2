@@ -7,7 +7,8 @@ dotenv.load_dotenv()
 extension_base = "cogs."
 extensions = [
     "help",
-    "ping"
+    "ping",
+    "symptom"
 ]
 
 bot = CovidBot()
