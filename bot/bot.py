@@ -6,7 +6,7 @@ class CovidBot(AutoShardedBot):
     name: str = "CovidBot"
     def __init__(self, *args, **kwargs):
         kwargs.setdefault("command_prefix", "!")
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, help_command=None, **kwargs)
 
         self.logger = logging.getLogger(self.name or self.__class__.__name__)
         formatter = logging.Formatter("[%(asctime)s %(levelname)s] (%(name)s: %(filename)s:%(lineno)d) > %(message)s")
@@ -20,13 +20,13 @@ class CovidBot(AutoShardedBot):
 
     def get_logger(self, cog):
         name = cog.__class__.__name__
-        logger = getLogger(name and self.name + "." + name or self.name or self.__class__.__name__)
+        logger = logging.getLogger(name and self.name + "." + name or self.name or self.__class__.__name__)
         logger.setLevel('DEBUG')
         return logger
 
     def run(self, *args, **kwargs):
         self.logger.info("Starting bot")
-        super().run(*args, **kwargs)    
+        super().run(*args, **kwargs)
 
     async def on_ready(self):
         self.logger.info("Bot ready")
