@@ -1,5 +1,6 @@
 # 코로나19 알림봇(Covid-19 alert discord bot)
-
+Team Pickle에서 개발한 코로나19 알림봇의 소스입니다.    
+소스코드에는 GPL-3.0 라이선스가 적용되며, 봇의 프로필 사진 등에는 공공누리 제4 유형 라이선스가 적용됩니다.
 
 ### pre-script
 python3.8, venv사용을 권장합니다.
