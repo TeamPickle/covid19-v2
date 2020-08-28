@@ -61,26 +61,26 @@ class Help(Cog):
             settings += _DM_SETTING
             
         embed = Embed(
-            title=title.format(prefix="!"),
+            title=title.format(prefix=ctx.prefix),
             description="코로나19와 관련된 국내외 소식과 관련 정보를 전해드립니다.",
             color=0x0077aa
         )
 
         embed.add_field(
             name="주 명령어",
-            value=_MAIN_COMMAND.format(prefix="!"),
+            value=_MAIN_COMMAND.format(prefix=ctx.prefix),
             inline=False
         )
 
         embed.add_field(
             name="설정 및 옵션",
-            value=settings.format(prefix="!"),
+            value=settings.format(prefix=ctx.prefix),
             inline=False
         )
 
         embed.add_field(
-            name="부가 명령어({prefix}도움 [명령어이름]으로 확인가능)".format(prefix="!"),
-            value=subCommand.format(prefix="!"),
+            name="부가 명령어({prefix}도움 [명령어이름]으로 확인가능)".format(prefix=ctx.prefix),
+            value=subCommand.format(prefix=ctx.prefix),
             inline=False
         )
 
@@ -100,6 +100,9 @@ class Help(Cog):
         except Forbidden:
             await ctx.send(embed=embed)
 
+    async def __detailHelp(self, ctx: Context, *args):
+        if args[1] == "병원":
+            pass
 
 def setup(bot: CovidBot):
     bot.add_cog(Help(bot))
