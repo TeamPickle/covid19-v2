@@ -1,12 +1,13 @@
-from discord import Game
+from discord import Game, Message
 from discord.ext.commands import AutoShardedBot
 import logging
+import os
 from db import PickleDB
 
 class CovidBot(AutoShardedBot):
     name = "CovidBot"
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault("command_prefix", "!")
+        kwargs.setdefault("command_prefix", get_command_prefix)
         super().__init__(*args, help_command=None, **kwargs)
 
         self.logger = logging.getLogger(self.name or self.__class__.__name__)
@@ -36,3 +37,7 @@ class CovidBot(AutoShardedBot):
         await self.change_presence(
             activity=Game("!도움으로 명령어 확인")
         )
+
+
+def get_command_prefix(bot: CovidBot, msg: Message):
+    return os.getenv("PREFIX") or "!"
