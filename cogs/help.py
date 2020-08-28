@@ -43,7 +43,11 @@ class Help(Cog):
         self.logger.info("initialized")
     
     @command(aliases=["도움", "도움말"])
-    async def help(self, ctx: Context):
+    async def help(self, ctx: Context, *args):
+        if len(args) == 0:
+            await self.__fullHelp(ctx, *args)
+    
+    async def __fullHelp(self, ctx: Context, *args):
         mode = utils.get_mode(ctx)
 
         settings = _GLOBAL_SETTING
