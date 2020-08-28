@@ -8,7 +8,8 @@ extension_base = "cogs."
 extensions = [
     "help",
     "ping",
-    "symptom"
+    "symptom",
+    "disaster"
 ]
 
 bot = CovidBot()
