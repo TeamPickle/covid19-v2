@@ -77,7 +77,7 @@ class Admin(Cog):
                 send_accept = await self.bot.wait_for('message', check=check, timeout=100)
 
                 if send_accept.content == "y" or send_accept.content == "ㅇ" or send_accept.content == "d":
-                    await self.__send(embed, ctx, True, False)
+                    await utils.send(embed, ctx, True, False)
                     # if typ in ["속보", "뉴스", "해외", "확진", "사망"]:
                         # with open('./botdata/news.txt', 'rb') as f:
                         #     news = pickle.load(f)
@@ -95,7 +95,7 @@ class Admin(Cog):
                         #         news, f, protocol=pickle.HIGHEST_PROTOCOL)
 
                 elif send_accept.content == "s" or send_accept.content == "ㄴ" or send_accept.content == "n":
-                    await self.__send(embed, ctx, False, False)
+                    await utils.send(embed, ctx, False, False)
                     # if typ in ["속보", "뉴스", "해외", "확진", "사망"]:
                         # with open('./botdata/news.txt', 'rb') as f:
                         #     news = pickle.load(f)
@@ -150,50 +150,8 @@ class Admin(Cog):
             color=0xff4848
         )
         embed.set_footer(text="위 뉴스는 자동으로 보내진 속보입니다.")
-        await self.__send(embed, ctx, False, False)
+        await utils.send(embed, ctx, False, False)
         
-
-    async def __send(self, embed: Embed, ctx: Context, imp: bool, iscurrent: bool):
-        """
-        imp: 중요공지 여부
-        iscurrent: 현황 변경?
-        """
-        await ctx.send("start")
-        j = 0
-        blocklist = list(self.db["covid19"]["noti"].find())
-        blocklist = list(map(lambda x: x['_id'], blocklist))
-        dnd = list(self.db["covid19"]["dnd"].find())
-        dnd = list(map(lambda x: x['_id'], dnd))
-        chlist = list(self.db["covid19"]["channels"].find())
-        chlist = {item['_id']: item['channel'] for item in chlist}
-
-        good = 7 <= (datetime.datetime.utcnow() + datetime.timedelta(hours=9)).hour < 22
-
-        for guild in self.bot.guilds:
-            try:
-                if not((not imp and guild.id in blocklist) or (not good and guild.id in dnd)):
-                    if guild.id in chlist.keys():
-                        await self.bot.get_channel(chlist[guild.id]).send(embed=embed)
-                    else:
-                        await guild.text_channels[0].send(embed=embed)
-            except Exception:
-                j += 1
-                raise
-        i = len(self.bot.guilds)
-        await ctx.send(f"{i - j}/{i}")
-
-        if iscurrent:
-            autocall = list(self.db["covid19"]["autocall"].find())
-            autocall = list(map(lambda x: x['_id'], autocall))
-
-            for userid in autocall:
-                try:
-                    await self.bot.get_user(userid).send(embed=embed)
-                except Exception:
-                    raise
-            await ctx.send(f"autocall done: {len(autocall)}")
-            
-
 
 async def makeGraph(t):
     dtnow = datetime.datetime.now()
