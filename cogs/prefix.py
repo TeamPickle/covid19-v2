@@ -14,7 +14,7 @@ class Prefix(Cog):
     
     @command(name="setprefix", aliases=["접두사설정"])
     @utils.server_command
-    @utils.guild_permission()
+    @utils.guild_permission("서버관리자만 접두사를 변경할 수 있습니다.")
     async def setprefix(self, ctx: Context, *args):
         if len(args) == 0:
             await ctx.send(f"명령어 사용법 : ``{ctx.prefix}접두사설정 !``")
@@ -29,7 +29,7 @@ class Prefix(Cog):
     
     @command(name="resetprefix", aliases=["접두사초기화"])
     @utils.server_command
-    @utils.guild_permission()
+    @utils.guild_permission("서버관리자만 접두사를 변경할 수 있습니다.")
     async def resetprefix(self, ctx: Context, *args):
         guild: Guild = ctx.guild
         self.db["covid19"]["prefix"].remove({"_id": guild.id})
