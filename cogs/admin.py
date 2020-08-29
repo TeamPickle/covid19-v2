@@ -1,7 +1,7 @@
 from discord import Message, File, Embed
 from discord.ext.commands import Cog, Context, command
 from bot import CovidBot
-# from matplotlib import font_manager
+import matplotlib
 import aiohttp, re, datetime, os, asyncio, requests
 import utils
 
@@ -12,7 +12,7 @@ class Admin(Cog):
         self.db = bot.pickle_db
         self.logger = bot.get_logger(self)
 
-        # self.fontprop = font_manager.FontProperties(fname="./malgunbd.TTF").get_name()
+        matplotlib.rc('font', family="NanumGothic")
 
         if not os.path.exists("botdata"):
             os.mkdir("botdata")
