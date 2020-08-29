@@ -65,7 +65,7 @@ class Status(Cog):
                 embed2.color = embed.color
 
                 await utils.makeGraph(t)
-                graphch = client.get_channel(os.getenv("GRAPH_CHANNEL"))
+                graphch = self.bot.get_channel(os.getenv("GRAPH_CHANNEL"))
                 graphmsg = await graphch.send(file=File("./botdata/graph.png"))
                 
                 await utils.send(embed2, ctx, True, True, graphch)
