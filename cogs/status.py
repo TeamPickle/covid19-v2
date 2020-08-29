@@ -20,6 +20,7 @@ class Status(Cog):
     
     @command(aliases=["현황"])
     async def status(self, ctx: Context, *args):
+        # TODO 구 데이터?
         increase = lambda x: f"▲{x}" if x > 0 else "-0"
 
         if len(args) == 0:
