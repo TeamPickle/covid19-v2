@@ -1,9 +1,10 @@
-from discord import Embed
+from discord import Embed, Forbidden
 from discord.ext.commands import Cog, Context, command
 from bot import CovidBot
 import aiohttp
 import re
 import math
+import asyncio
 
 _DISASTER_REGION = ["강원", "경기", "경남", "경북", "광주", "대구", "대전",
                    "부산", "서울", "울산", "인천", "전남", "전북", "제주", "충남", "충북", "세종"]
@@ -126,6 +127,63 @@ class Status(Cog):
                     color=0x00cccc
                 )
                 em = await ctx.send(embed=embed)
+
+                try:
+                    await em.add_reaction("◀")
+                    await em.add_reaction("▶")
+                    page = 0
+
+                    def check(reaction, user):
+                        return user == ctx.author and reaction.message.embeds[0].to_dict() == em.embeds[0].to_dict() and (
+                            reaction.emoji == "◀" or reaction.emoji == "▶") and reaction.message.id == em.id
+
+                    while True:
+                        try:
+                            reaction, user = await self.bot.wait_for('reaction_add', timeout=30.0, check=check)
+                        except asyncio.TimeoutError:
+                            try:
+                                await em.clear_reactions()
+                            except:
+                                pass
+                            break
+                        else:
+                            try:
+                                await em.remove_reaction(reaction.emoji, user)
+                            except:
+                                pass
+                            if reaction.emoji == "◀":
+                                if page == 0:
+                                    page = math.ceil(len(t) / 10)
+                                else:
+                                    page -= 1
+                            else:
+                                if page == math.ceil(len(t) / 10):
+                                    page = 0
+                                else:
+                                    page += 1
+
+                            desc = ""
+                            if page == 0:
+                                desc = "<:chiryojung:711728328985411616> 치료중 : "+format(gl['active'][-1], ',')+"\n"\
+                                    "<:nujeok:687907310923677943> 확진자 : "+format(gl['confirmed_acc'][-1], ',')+"("+("▲" + str(gl['confirmed'][-1]) if gl['confirmed'][-1] > 0 else "-0") + ")\n"\
+                                    "<:wanchi:687907312052076594> 완치 : "+format(gl['released_acc'][-1], ',')+"("+("▲" + str(gl['released'][-1]) if gl['released'][-1] > 0 else "-0") + ")\n"\
+                                    "<:samang:687907312123510817> 사망 : "+format(gl['death_acc'][-1], ',')+"("+("▲" + str(gl['death'][-1]) if gl['death'][-1] > 0 else "-0") + ")\n\n"\
+                                    "🚩 발생국 : "+str(len(t))+"\n"
+                            else:
+                                for i in range((page - 1) * 10, min(page * 10, len(t))):
+                                    desc += t[i]['flag'].lower() + " **" + label[t[i]['cc']] + "** : <:nujeok:687907310923677943> " + format(t[i]['confirmed'], ",") + " / <:wanchi:687907312052076594> " + format(
+                                        t[i]['released'], ",") + " / <:samang:687907312123510817> " + format(t[i]['death'], ",") + "\n"
+
+                            desc += "(" + str(page+1) + "/" + \
+                                str(math.ceil(len(t) / 10)+1) + ")"
+                            embed = Embed(
+                                title="🗺️ 세계 코로나 현황",
+                                description=desc,
+                                color=0x00cccc
+                            )
+                            await em.edit(embed=embed)
+                except Forbidden:
+                    await ctx.send("필요한 권한(메시지 관리, 이모티콘 관리, 반응 추가하기)이 할당되지 않아 기능이 제대로 작동하지 않습니다. 권한을 할당해주세요.")
                 return
             elif u in _DISASTER_REGION:
                 t = eval(re.findall(
