@@ -3,7 +3,7 @@ from discord.ext.commands import Cog, Context, command
 from bot import CovidBot
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from matplotlib import font_manager, rc
+# from matplotlib import font_manager
 import aiohttp, re, datetime, os
 import utils
 
@@ -14,9 +14,7 @@ class Admin(Cog):
         self.db = bot.pickle_db
         self.logger = bot.get_logger(self)
 
-        font_manager.get_fontconfig_fonts()
-        font_name = font_manager.FontProperties(fname="./malgunbd.TTF").get_name()
-        rc('font', family=font_name)
+        # self.fontprop = font_manager.FontProperties(fname="./malgunbd.TTF").get_name()
 
         if not os.path.exists("botdata"):
             os.mkdir("botdata")
