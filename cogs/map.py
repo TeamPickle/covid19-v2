@@ -113,7 +113,6 @@ def deg2num(lat_deg, lon_deg, zoom, offset=None):
         return (xtile, ytile)
 
 
-
 def getZoomByBoundary(boundary, side):
     if type(boundary) == dict:  # when search address
         minX, minY, maxX, maxY = map(float, boundary.values())
@@ -165,6 +164,7 @@ def drawMapByDeg(lat, lon, circles, zoom = 19, offset = 2, mapType = MapType.BAS
     name = "./maps/" + "%032x" % random.getrandbits(128) + ".jpg"
     cv2.imwrite(name, img)
     return name
+
 
 def setup(bot: CovidBot):
     bot.add_cog(Map(bot))
