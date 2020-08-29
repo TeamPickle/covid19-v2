@@ -40,7 +40,6 @@ class CovidBot(AutoShardedBot):
 
     async def on_command_error(self, ctx: Context, e: Exception):
         if isinstance(e, CommandNotFound):
-            await super().on_command_error(ctx, e)
             return
         logChannel = os.getenv("LOG_CHANNEL")
         if logChannel:
