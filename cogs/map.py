@@ -43,6 +43,7 @@ class Map(Cog):
             "num"	INTEGER
         )""")
         self.conn.commit()
+        self.__genmap()
 
         self.logger.info("initialized")
     
@@ -179,6 +180,11 @@ class Map(Cog):
     @command(name="genmap")
     @utils.checkadmin()
     async def genmap(self, ctx: Context):
+        self.__genmap()
+        await ctx.send("DB saved. mapver : "+self.mapver)
+
+
+    def __genmap(self):
         async with aiohttp.ClientSession() as session:
             async with session.get("https://coronamap.site/javascripts/ndata.js") as r:
                 data = await r.text('utf-8')
@@ -222,8 +228,6 @@ class Map(Cog):
         self.conn.commit()
 
         self.mapver = str(random.randint(10000, 99999))
-        await ctx.send("DB saved. mapver : "+self.mapver)
-
 
 
 def deg2num(lat_deg, lon_deg, zoom, offset=None):
