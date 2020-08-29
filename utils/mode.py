@@ -15,3 +15,11 @@ def get_mode(ctx: Context) -> Mode:
     else:
         mode = Mode.UNKNOWN
     return mode
+
+def server_command(func):
+    async def wrapper(self, ctx: Context, *args):
+        if get_mode(ctx) != Mode.SERVER:
+            await ctx.send("해당 명령어는 서버 채널에서 이용하실 수 있습니다. 아래 링크를 클릭하여 봇을 내 서버에 초대해 보세요!\nhttp://covid19bot.tpk.kr")
+        else:
+            await func(self, ctx, *args)
+    return wrapper
