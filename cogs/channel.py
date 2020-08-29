@@ -46,11 +46,11 @@ class Channel(Cog):
     async def noti(self, ctx: Context, *args):
         if args:
             guild: Guild = ctx.guild
-            if args[0] == "ㅇ":
+            if args[0] in ["ㅇ", "y", "Y"]:
                 self.db["covid19"]["noti"].insert_one({"_id": guild.id})
                 await ctx.send("중요뉴스만 받기 옵션이 설정되었습니다.")
                 return
-            elif args[0] == "ㄴ":
+            elif args[0] in ["ㄴ", "n", "N"]:
                 self.db["covid19"]["noti"].remove({"_id": guild.id})
                 await ctx.send("중요뉴스만 받기 옵션이 해제되었습니다.")
                 return
@@ -62,11 +62,11 @@ class Channel(Cog):
     async def dnd(self, ctx: Context, *args):
         if args:
             guild: Guild = ctx.guild
-            if args[0] == "ㅇ":
+            if args[0] in ["ㅇ", "y", "Y"]:
                 self.db["covid19"]["dnd"].insert_one({"_id": guild.id})
                 await ctx.send("방해금지 모드가 설정되었습니다.")
                 return
-            elif args[0] == "ㄴ":
+            elif args[0] in ["ㄴ", "n", "N"]:
                 self.db["covid19"]["dnd"].remove({"_id": guild.id})
                 await ctx.send("방해금지 모드가 해제되었습니다.")
                 return
