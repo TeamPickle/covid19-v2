@@ -1,6 +1,7 @@
-from discord import TextChannel
+from discord import TextChannel, Embed
 from discord.ext.commands import Context
 from bot import CovidBot
+import datetime
 
 async def send(embed: Embed, ctx: Context, imp: bool, iscurrent: bool, channel: TextChannel = None):
     """
