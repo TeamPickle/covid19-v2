@@ -1,4 +1,4 @@
-from discord import Game, Message, Embed, TextChannel
+from discord import Game, Message, Embed, TextChannel, Guild
 from discord.ext.commands import AutoShardedBot, Context
 from discord.ext.commands.errors import CommandNotFound
 import logging
@@ -77,4 +77,8 @@ def get_command_prefix(bot: CovidBot, msg: Message):
         return default
     if msg.content in map(lambda x: x + "접두사초기화", default):
         return default
+    guild: Guild = msg.guild
+    if result := bot.pickle_db["covid19"]["prefix"].find_one({"_id": guild.id}):
+        prefix = result["prefix"]
+        return [prefix + " ", prefix]
     return default
