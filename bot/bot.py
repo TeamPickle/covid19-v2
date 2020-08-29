@@ -1,4 +1,4 @@
-from discord import Game, Message, Embed
+from discord import Game, Message, Embed, TextChannel
 from discord.ext.commands import AutoShardedBot, Context
 from discord.ext.commands.errors import CommandNotFound
 import logging
@@ -71,4 +71,10 @@ class CovidBot(AutoShardedBot):
         
 
 def get_command_prefix(bot: CovidBot, msg: Message):
-    return os.getenv("prefix") or "!"
+    default = os.getenv("prefix") or "!"
+    default = [default + " ", default]
+    if type(msg.channel) != TextChannel:
+        return default
+    if msg.content in map(lambda x: x + "접두사초기화", default):
+        return default
+    return default
