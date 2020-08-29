@@ -73,6 +73,7 @@ class Status(Cog):
                 t = eval(re.findall('"statGlobalNow":(.+?),"stat', res)[0].replace("null", '"null"'))
                 v1 = v2 = v3 = leapa = leapb = leapc = 0
 
+                flag = None
                 for index in range(len(t)):
                     if t[index]['cc'] == cc:
                         v1 = t[index]['confirmed']
@@ -88,6 +89,9 @@ class Status(Cog):
                         except KeyError:
                             pass
                         break
+                if flag == None:
+                    await ctx.send("해당 국가에 대한 정보가 없습니다.")
+                    return
                 title = f"{flag} 국가별 현황 - {arg}"
                 v1, v2, v3 = map(lambda x: format(x, ","), (v1, v2, v3))
                 embed = Embed(
