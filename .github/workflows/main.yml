@@ -22,5 +22,14 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: done ✔️
-        run: echo done ✅
+      - name: use venv ✉️
+        run: source .venv/bin/activate
+      
+      - name: install modules ✅
+        run: pip install -r requirements.txt
+      
+      - name: copy files 🚚
+        run: cp -r . ~/covid19
+
+      - name: start service
+        run: sudo systemctl restart covid19
