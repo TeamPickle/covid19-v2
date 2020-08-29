@@ -12,7 +12,8 @@ extensions = [
     "disaster",
     "hospital",
     "status",
-    "graphic"
+    "graphic",
+    "prefix"
 ]
 
 bot = CovidBot()
