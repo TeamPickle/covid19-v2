@@ -15,7 +15,7 @@ def checkadmin(super_admin=False):
         return wrapper
     return decorator
 
-def guild_permission(idx: int=3):
+def guild_permission(message: str, idx: int=3):
     def decorator(func):
         async def wrapper(self, ctx: Context, *args):
             author: Member = ctx.author
@@ -23,8 +23,8 @@ def guild_permission(idx: int=3):
                 await func(self, ctx, *args)
             else:
                 if idx == 3:
-                    await ctx.send("서버 관리자만 사용가능한 명령어입니다.")
+                    await ctx.send(message or "서버 관리자만 사용가능한 명령어입니다.")
                 else:
-                    await ctx.send("명령어를 사용하기 위한 권한이 부족합니다.")
+                    await ctx.send(message or "명령어를 사용하기 위한 권한이 부족합니다.")
         return wrapper
     return decorator
