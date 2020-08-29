@@ -93,8 +93,8 @@ class Status(Cog):
                 embed = Embed(
                     title=title,
                     description=f"<:nujeok:687907310923677943> 확진자 : {v1}명({increase(leapa)})\n" \
-                            f"<:wanchi:687907312052076594> 완치 : {v2}({increase(leapb)}) - {per_v2}%\n" \
-                            f"<:samang:687907312123510817> 사망 : {v3}({increase(leapc)}) - {per_v3}%\n\n",
+                            f"<:wanchi:687907312052076594> 완치 : {v2}명({increase(leapb)}) - {per_v2}%\n" \
+                            f"<:samang:687907312123510817> 사망 : {v3}명({increase(leapc)}) - {per_v3}%\n\n",
                     color=0x00bfff
                 )
                 await ctx.send(embed=embed)
