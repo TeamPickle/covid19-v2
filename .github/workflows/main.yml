@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: use venv ✉️
-        run: source .venv/bin/activate
+        run: if [ ! -d ".venv" ]; then python3.8 -m venv .venv; fi; source .venv/bin/activate
       
       - name: install modules ✅
         run: pip install -r requirements.txt
