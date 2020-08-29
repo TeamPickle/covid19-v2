@@ -3,4 +3,4 @@ python-dotenv==0.14.0
 pymongo==3.11.0
 dnspython==2.0.0
 Pillow==7.2.0
-pyjsparser==2.7.1
+js2py
