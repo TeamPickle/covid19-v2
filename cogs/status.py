@@ -3,6 +3,7 @@ from discord.ext.commands import Cog, Context, command
 from bot import CovidBot
 import aiohttp
 import re
+import math
 
 _DISASTER_REGION = ["강원", "경기", "경남", "경북", "광주", "대구", "대전",
                    "부산", "서울", "울산", "인천", "전남", "전북", "제주", "충남", "충북", "세종"]
@@ -102,6 +103,29 @@ class Status(Cog):
                     color=0x00bfff
                 )
                 await ctx.send(embed=embed)
+                return
+            elif arg in ["세계", "지구", "전세계", "world"]:
+                t = eval(re.findall('"statGlobalNow":(.+?),"stat', res)
+                         [0].replace("null", '"null"'))
+
+                t = sorted(
+                    t, key=lambda country: country['confirmed'], reverse=True)
+                label = eval(re.findall('"ko":(.+?)"},', res)[0]+'"}')
+
+                gl = eval(re.findall(
+                    ',"global":(.+?)},"chartForDomestic', res)[0])
+                desc = "<:chiryojung:711728328985411616> 치료중 : "+format(gl['active'][-1], ',')+"\n"\
+                       "<:nujeok:687907310923677943> 확진자 : "+format(gl['confirmed_acc'][-1], ',')+"("+("▲" + str(gl['confirmed'][-1]) if gl['confirmed'][-1] > 0 else "-0") + ")\n"\
+                       "<:wanchi:687907312052076594> 완치 : "+format(gl['released_acc'][-1], ',')+"("+("▲" + str(gl['released'][-1]) if gl['released'][-1] > 0 else "-0") + ")\n"\
+                       "<:samang:687907312123510817> 사망 : "+format(gl['death_acc'][-1], ',')+"("+("▲" + str(gl['death'][-1]) if gl['death'][-1] > 0 else "-0") + ")\n\n"\
+                       "🚩 발생국 : "+str(len(t))+"\n"
+                embed = Embed(
+                    title="🗺️ 세계 코로나 현황",
+                    description=desc +
+                    "(1/" + str(math.ceil(len(t) / 10)+1) + ")",
+                    color=0x00cccc
+                )
+                em = await ctx.send(embed=embed)
                 return
             elif u in _DISASTER_REGION:
                 t = eval(re.findall(
