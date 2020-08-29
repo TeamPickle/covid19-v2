@@ -13,6 +13,7 @@ _DISASTER_ALIAS = {"충청남도": "충남", "충청북도": "충북", "전라�
 class Status(Cog):
     def __init__(self, bot: CovidBot):
         self.bot = bot
+        self.db = bot.pickle_db
         self.logger = bot.get_logger(self)
 
         self.logger.info("initialized")
@@ -50,7 +51,7 @@ class Status(Cog):
                 color=0x006699
             )
             embed.set_footer(text="지자체에서 자체 집계한 자료와는 차이가 있을 수 있습니다.")
-            embed.set_image(url="https://media.discordapp.net/attachments/687736707902079026/748715852932841502/graph.png")
+            embed.set_image(url=self.db["covid19"]["graphs"].find_one(sort=[("createdAt", -1)])["_id"])
             await ctx.send(embed=embed)
             return
         elif 1 <= len(args) <= 2:
