@@ -52,6 +52,9 @@ class Map(Cog):
         args = " ".join(args)
         async with aiohttp.ClientSession() as session:
             async with session.get(f"https://map.naver.com/v5/api/search?caller=pcweb&query={args}") as r:
+                status_code = r.status
+                if status_code != 200:
+                    await ctx.send("서버 에러가 발생했습니다.")
                 res = await r.json()
         await ctx.send(args + "(으)로 검색중입니다.")
 
