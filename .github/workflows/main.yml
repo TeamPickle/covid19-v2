@@ -32,7 +32,9 @@ jobs:
         run: rm -rf ~/covid19
       
       - name: copy files 🚚
-        run: cp -r * ~/covid19
+        run: |
+          mkdir ~/covid19
+          cp -r * ~/covid19
       
       - name: write env 🌲
         run: |
