@@ -141,6 +141,18 @@ class Admin(Cog):
             "createdAt": datetime.datetime.utcnow()
         })
 
+    @command(name="연합뉴스")
+    @utils.checkadmin()
+    async def yna(self, ctx: Context, *args):
+        embed = Embed(
+            title="<:sokbo:687907311875915845> 속보",
+            description=" ".join(args),
+            color=0xff4848
+        )
+        embed.set_footer(text="위 뉴스는 자동으로 보내진 속보입니다.")
+        await self.__send(embed, ctx, False, False)
+        
+
     async def __send(self, embed: Embed, ctx: Context, imp: bool, iscurrent: bool):
         """
         imp: 중요공지 여부
