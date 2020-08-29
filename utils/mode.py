@@ -23,3 +23,11 @@ def server_command(func):
         else:
             await func(self, ctx, *args)
     return wrapper
+
+def dm_command(func):
+    async def wrapper(self, ctx: Context, *args):
+        if get_mode(ctx) != Mode.DM:
+            await ch.send("해당 명령어는 개인 채널에서만 사용하실 수 있습니다.")
+        else:
+            await func(self, ctx, *args)
+    return wrapper
