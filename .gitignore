@@ -1,6 +1,6 @@
 .env
 .venv
-.vscode
+.vscode/
 __pycache__
 local/final.png
 *.ttf
