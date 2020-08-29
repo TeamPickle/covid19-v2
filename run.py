@@ -16,7 +16,8 @@ extensions = [
     "prefix",
     "map",
     "channel",
-    "position"
+    "position",
+    "admin"
 ]
 
 bot = CovidBot()
