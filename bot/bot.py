@@ -1,11 +1,9 @@
 from discord import Game, Message, Embed, TextChannel, Guild
 from discord.ext.commands import AutoShardedBot, Context
 from discord.ext.commands.errors import CommandNotFound
-import logging
-import os
-import random
-import traceback
+import logging, os, random, traceback
 from db import PickleDB
+import dbl
 
 class CovidBot(AutoShardedBot):
     name = "CovidBot"
@@ -37,9 +35,8 @@ class CovidBot(AutoShardedBot):
 
     async def on_ready(self):
         self.logger.info("Bot ready")
-        await self.change_presence(
-            activity=Game("!도움으로 명령어 확인")
-        )
+        if token := os.getenv("DBL_TOKEN"):
+            dbl.DBLClient(bot, token)
 
     async def on_command_error(self, ctx: Context, e: Exception):
         if isinstance(e, CommandNotFound):
