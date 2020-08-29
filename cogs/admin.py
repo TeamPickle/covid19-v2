@@ -141,7 +141,7 @@ class Admin(Cog):
             "createdAt": datetime.datetime.utcnow()
         })
 
-    @command(name="연합뉴스")
+    @command(name="yna", aliases=["연합뉴스"])
     @utils.checkadmin()
     async def yna(self, ctx: Context, *args):
         embed = Embed(
