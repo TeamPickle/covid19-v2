@@ -99,7 +99,7 @@ class Status(Cog):
                 )
                 await ctx.send(embed=embed)
                 return
-            elif u in DISASTER_REGION:
+            elif u in _DISASTER_REGION:
                 t = eval(re.findall(
                     '"statByKrLocation":(.+?)}],"', res)[0] + "}]")
                 cnt = a = c = r = d = leapa = leapc = leapr = leapd = 0
