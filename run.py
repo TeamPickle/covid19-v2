@@ -10,7 +10,8 @@ extensions = [
     "ping",
     "symptom",
     "disaster",
-    "hospital"
+    "hospital",
+    "status"
 ]
 
 bot = CovidBot()
