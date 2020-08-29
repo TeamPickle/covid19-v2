@@ -21,5 +21,10 @@ def guild_permission(idx: int=3):
             author: Member = ctx.author
             if author.guild_permissions.value >> (idx - 1) & 1:
                 await func(self, ctx, *args)
+            else:
+                if idx == 3:
+                    await ctx.send("서버 관리자만 사용가능한 명령어입니다.")
+                else:
+                    await ctx.send("명령어를 사용하기 위한 권한이 부족합니다.")
         return wrapper
     return decorator
