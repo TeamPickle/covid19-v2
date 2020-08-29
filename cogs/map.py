@@ -180,11 +180,11 @@ class Map(Cog):
     @command(name="genmap")
     @utils.checkadmin()
     async def genmap(self, ctx: Context):
-        self.__genmap()
+        await self.__genmap()
         await ctx.send("DB saved. mapver : "+self.mapver)
 
 
-    def __genmap(self):
+    async def __genmap(self):
         async with aiohttp.ClientSession() as session:
             async with session.get("https://coronamap.site/javascripts/ndata.js") as r:
                 data = await r.text('utf-8')
