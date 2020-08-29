@@ -26,6 +26,14 @@ class Prefix(Cog):
             }
         }, upsert=True)
         await ctx.send(f"{prefix}(으)로 접두사를 변경했습니다. ``{prefix}도움``과 같이 사용하실 수 있습니다.")
+    
+    @command(name="resetprefix", aliases=["접두사초기화"])
+    @utils.server_command
+    @utils.guild_permission()
+    async def resetprefix(self, ctx: Context, *args):
+        guild: Guild = ctx.guild
+        self.db["covid19"]["prefix"].remove({"_id": guild.id})
+        await ctx.send("접두사를 초기화 했습니다. ``!도움``과 같이 사용하실 수 있습니다.")
         
 
 
