@@ -4,7 +4,7 @@ from bot import CovidBot
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib import font_manager, rc
-import aiohttp, re, datetime
+import aiohttp, re, datetime, os
 import utils
 
 
@@ -17,6 +17,9 @@ class Admin(Cog):
         font_manager.get_fontconfig_fonts()
         font_name = font_manager.FontProperties(fname="./malgunbd.TTF").get_name()
         rc('font', family=font_name)
+
+        if not os.path.exists("botdata"):
+            os.mkdir("botdata")
 
         self.logger.info("initialized")
 
