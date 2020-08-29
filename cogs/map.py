@@ -41,7 +41,7 @@ class Map(Cog):
 
         self.logger.info("initialized")
     
-    @command(aliases=["지도"])
+    @command(name="map", aliases=["지도"])
     @utils.userpos
     async def map(self, ctx: Context, *args):
         args = " ".join(args)
