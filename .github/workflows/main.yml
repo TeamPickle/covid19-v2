@@ -23,13 +23,25 @@ jobs:
       - uses: actions/checkout@v2
       
       - name: stop service
-        run: sudo systemctl stop covid19
+        run: systemctl --user stop covid19
 
       - name: install modules ✅
-        run: sudo python3.8 -m pip install -r requirements.txt
+        run: python3.8 -m pip install -r requirements.txt
+      
+      - name: remove exist file 🗑
+        run: rm -rf ~/covid19
       
       - name: copy files 🚚
         run: cp -r * ~/covid19
+      
+      - name: write env 🌲
+        run: |
+          touch ~/covid19/.env
+          echo DB_FULL=${{ secrets.DB_FULL }} >> .env
+          echo TOKEN=${{ secrets.TOKEN }} >> .env
+          echo LOG_CHANNEL=${{ secrets.LOG_CHANNEL }} >> .env
+          echo GRAPH_CHANNEL=${{ secrets.GRAPH_CHANNEL }} >> .env
+          echo THUNDER_ID=${{ secrets.THUNDER_ID }} >> .env
 
       - name: start service
-        run: sudo systemctl start covid19
+        run: systemctl --user start covid19
