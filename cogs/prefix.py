@@ -16,6 +16,8 @@ class Prefix(Cog):
     @utils.server_command
     @utils.guild_permission()
     async def setprefix(self, ctx: Context, *args):
+        if len(args) == 0:
+            await ctx.send(f"명령어 사용법 : ``{ctx.prefix}접두사설정 !``")
         guild: Guild = ctx.guild
         prefix = " ".join(args)
         self.db["covid19"]["prefix"].update_one({"_id": guild.id}, {
