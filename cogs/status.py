@@ -53,6 +53,7 @@ class Status(Cog):
             embed.set_footer(text="지자체에서 자체 집계한 자료와는 차이가 있을 수 있습니다.")
             embed.set_image(url=self.db["covid19"]["graphs"].find_one(sort=[("createdAt", -1)])["_id"])
             await ctx.send(embed=embed)
+            # TODO invoke make graph
             return
         elif 1 <= len(args) <= 2:
             u = args[0]
