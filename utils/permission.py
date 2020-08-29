@@ -1,3 +1,4 @@
+from discord import Member
 from discord.ext.commands import Context
 from bot import CovidBot
 
@@ -11,5 +12,14 @@ def checkadmin(super_admin=False):
             else:
                 if bot.pickle_db.pickle.admins.find_one({"_id": str(ctx.author.id)}):
                     await func(self, ctx, *args)
+        return wrapper
+    return decorator
+
+def serveradmin():
+    def decorator(func):
+        async def wrapper(self, ctx: Context, *args):
+            author: Member = ctx.author
+            print(author.guild_permissions.value >> 3 & 1)
+            await func(self, ctx, *args)
         return wrapper
     return decorator
