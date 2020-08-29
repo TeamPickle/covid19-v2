@@ -1,10 +1,15 @@
+from discord import File
 from discord.ext.commands import Cog, Context, command
 from bot import CovidBot
 from enum import Enum
 import utils
-import aiohttp, re, json, sqlite3, datetime, random
+import aiohttp, re, json, sqlite3, datetime, random, os, math, cv2
+import numpy as np
 import js2py
 
+
+_IMAGE_SIZE = (256, 256)
+_MAP_VERSION = 1597915238  # 지도 버전이 수시로 바뀜
 
 class MapType(Enum):
     SATELLITE = "satellite"
@@ -50,9 +55,9 @@ class Map(Cog):
                 res = await r.json()
         await ctx.send(args + "(으)로 검색중입니다.")
 
-        name = "./maps/"+args[0].encode('utf-8').hex()+mapver+".png"
+        name = "./maps/"+args[0].encode('utf-8').hex()+self.mapver+".png"
         if os.path.isfile(name):
-            await ch.send(file=discord.File(name))
+            await ctx.send(file=File(name))
             return
         
         async with ctx.typing():
@@ -96,14 +101,14 @@ class Map(Cog):
                     # name = drawMapByDeg(y, x, z) # 다 꼬였다 에라이
                     img = await getMap(z, x - 2, y - 2, 5,
                                     5, MapType.BASIC)
-                    for i in conn.execute(
+                    for i in self.conn.execute(
                         'SELECT * FROM "main"."position" WHERE "lat" BETWEEN {} AND {}  AND "long" BETWEEN {} AND {};'
                             .format(minY, maxY, minX, maxX)):
                         # date = datetime.date.fromordinal(i[1])
                         # if i[2] != -1:
                         x1, y1 = deg2num(i[5], i[6], z)
-                        x1 = int((x1 - x + 2) * image_size[0])
-                        y1 = int((y1 - y + 2) * image_size[1])
+                        x1 = int((x1 - x + 2) * _IMAGE_SIZE[0])
+                        y1 = int((y1 - y + 2) * _IMAGE_SIZE[1])
                         date = datetime.date.fromordinal(i[1])
                         today = datetime.date.today()
                         days = (today - date).days
@@ -133,9 +138,9 @@ class Map(Cog):
                                     x1, y1 = deg2num(
                                         coord[1], coord[0], z)
                                     x1 = int(
-                                        (x1 - x + 2) * image_size[0])
+                                        (x1 - x + 2) * _IMAGE_SIZE[0])
                                     y1 = int(
-                                        (y1 - y + 2) * image_size[1])
+                                        (y1 - y + 2) * _IMAGE_SIZE[1])
                                     try:
                                         codArr = np.append(
                                             codArr, [[x1, y1]], axis=0)
@@ -150,9 +155,9 @@ class Map(Cog):
                                     x1, y1 = deg2num(
                                         coord[1], coord[0], z)
                                     x1 = int(
-                                        (x1 - x + 2) * image_size[0])
+                                        (x1 - x + 2) * _IMAGE_SIZE[0])
                                     y1 = int(
-                                        (y1 - y + 2) * image_size[1])
+                                        (y1 - y + 2) * _IMAGE_SIZE[1])
                                     try:
                                         codArr = np.append(
                                             codArr, [[x1, y1]], axis=0)
@@ -162,14 +167,11 @@ class Map(Cog):
                                     img, [codArr], False, (0, 0, 255), 2)
 
                     cv2.imwrite(name, img)
-                    await ch.send(file=discord.File(name))
+                    await ctx.send(file=File(name))
                 else:
-                    await ch.send("검색결과가 없습니다. 좀더 넓은 범위로 검색해주세요.")
+                    await ctx.send("검색결과가 없습니다. 좀더 넓은 범위로 검색해주세요.")
             except KeyError:
-                await ch.send("해당 지역을 찾을 수 없습니다.")
-
-
-        await ctx.send(str(self.bot.latency * 1000 // 1) + "ms")
+                await ctx.send("해당 지역을 찾을 수 없습니다.")
     
     @command(name="genmap")
     @utils.checkadmin()
@@ -227,8 +229,8 @@ def deg2num(lat_deg, lon_deg, zoom, offset=None):
             "zoom has to be greater than or equal to 0 and less than or equal to 21")
     if offset:
         xtile, ytile = deg2num(lat_deg, lon_deg, zoom)
-        floatX = (xtile - int(xtile) + offset) * image_size[0]
-        floatY = (ytile - int(ytile) + offset) * image_size[1]
+        floatX = (xtile - int(xtile) + offset) * _IMAGE_SIZE[0]
+        floatY = (ytile - int(ytile) + offset) * _IMAGE_SIZE[1]
 
         return (int(xtile), int(ytile), int(floatX), int(floatY))
     else:
@@ -259,7 +261,7 @@ async def getMap(zoom, x, y, dx, dy, mapType):
         for y1 in range(y, y + dy):
             big = None
             for x1 in range(x, x + dx):
-                async with session.get(f"https://map.pstatic.net/nrb/styles/{mapType.value}/1592557809/{zoom}/{x1}/{y1}.png?mt=bg.ol.lko") as res:
+                async with session.get(f"https://map.pstatic.net/nrb/styles/{mapType.value}/{_MAP_VERSION}/{zoom}/{x1}/{y1}.png?mt=bg.ol.lko") as res:
                     # res = requests.get("https://map.pstatic.net/nrb/styles/{type}/1588758928/{zoom}/{x}/{y}.png?mt=bg.ol.lko".format(
                     #     type=mapType.value, zoom=zoom, x=x1, y=y1), stream=True).raw
                     image = np.asarray(bytearray(await res.read()), dtype='uint8')
