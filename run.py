@@ -1,6 +1,7 @@
 import os
 import dotenv
 from bot import CovidBot
+import dbl
 
 dotenv.load_dotenv()
 
@@ -26,3 +27,5 @@ for ext in extensions:
     bot.load_extension(extension_base + ext)
 
 bot.run(os.getenv("TOKEN"))
+if token := os.getenv("DBL_TOKEN"):
+    dbl.DBLClient(bot, token)
