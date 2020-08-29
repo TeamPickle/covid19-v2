@@ -3,6 +3,7 @@ from discord.ext.commands import Cog, Context, command
 import aiohttp
 from bot import CovidBot
 import re
+import utils
 
 _DISASTER_REGION = ["전국", "강원", "경기", "경남", "경북", "광주", "대구", "대전",
                   "부산", "서울", "울산", "인천", "전남", "전북", "제주", "충남", "충북", "세종"]
@@ -21,9 +22,11 @@ class Disaster(Cog):
 
         self.logger.info("initialized")
     
-    @command(aliases=["재난문자"])
+    @command(name="disaster", aliases=["재난문자"])
+    @utils.userpos
     async def disaster(self, ctx: Context, *args):
         u = " ".join(args)
+        u = args[0]
         if u in _DISASTER_ALIAS.keys():
             u = _DISASTER_ALIAS[u]
 
@@ -55,8 +58,10 @@ class Disaster(Cog):
                     inline=False
                 )
             await ctx.send(embed=embed)
+            return
         else:
             await ctx.send(_UNABLE_TO_FETCH)
+            return
     
 
 def setup(bot: CovidBot):
