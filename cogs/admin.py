@@ -53,7 +53,7 @@ class Admin(Cog):
         graphmsg: Message = await ctx.send(file=File("./botdata/graph.png"))
         self.db["covid19"]["graphs"].insert_one({
             "_id": graphmsg.attachments[0].url,
-            "createdAt": datetime.datetime.now().utcnow()
+            "createdAt": datetime.datetime.utcnow()
         })
 
 
