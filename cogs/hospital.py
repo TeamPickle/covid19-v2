@@ -12,7 +12,7 @@ class Hospital(Cog):
 
         self.logger.info("initialized")
     
-    @command(aliases=["병원"])
+    @command(name="hospital", aliases=["병원"])
     @utils.userpos
     async def hospital(self, ctx: Context, *args):
         if len(args) >= 2:
