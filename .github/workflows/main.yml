@@ -31,11 +31,11 @@ jobs:
       - name: write env 🌲
         run: |
           touch .env
-          echo DB_FULL=${{ secrets.DB_FULL }} >> .env
-          echo TOKEN=${{ secrets.TOKEN }} >> .env
-          echo LOG_CHANNEL=${{ secrets.LOG_CHANNEL }} >> .env
-          echo GRAPH_CHANNEL=${{ secrets.GRAPH_CHANNEL }} >> .env
-          echo THUNDER_ID=${{ secrets.THUNDER_ID }} >> .env
+          echo "DB_FULL=${{ secrets.DB_FULL }}" >> .env
+          echo "TOKEN=${{ secrets.TOKEN }}" >> .env
+          echo "LOG_CHANNEL=${{ secrets.LOG_CHANNEL }}" >> .env
+          echo "GRAPH_CHANNEL=${{ secrets.GRAPH_CHANNEL }}" >> .env
+          echo "THUNDER_ID=${{ secrets.THUNDER_ID }}" >> .env
 
       - name: remove exist file 🗑
         run: rm -rf ~/covid19
