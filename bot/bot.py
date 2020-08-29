@@ -47,7 +47,7 @@ class CovidBot(AutoShardedBot):
             return
         logChannel = os.getenv("LOG_CHANNEL")
         if logChannel:
-            t = "%x" % random.randint(0, 16**8)
+            t = "%x" % random.randint(16**7, 16**8)
             embed = Embed(
                 title="⚠️ 오류가 발생했습니다.",
                 description="[팀 피클 공식 포럼](http://forum.tpk.kr)에 버그를 제보해주세요.\n" \
