@@ -21,15 +21,15 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
-      - name: use venv ✉️
-        run: if [ ! -d ".venv" ]; then python3.8 -m venv .venv; fi; source .venv/bin/activate
       
+      - name: stop service
+        run: sudo systemctl stop covid19
+
       - name: install modules ✅
-        run: pip install -r requirements.txt
+        run: python3.8 -m pip install -r requirements.txt
       
       - name: copy files 🚚
-        run: cp -r . ~/covid19
+        run: cp -r * ~/covid19
 
       - name: start service
-        run: sudo systemctl restart covid19
+        run: sudo systemctl start covid19
