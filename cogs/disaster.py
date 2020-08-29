@@ -25,7 +25,10 @@ class Disaster(Cog):
     @command(name="disaster", aliases=["재난문자"])
     @utils.userpos
     async def disaster(self, ctx: Context, *args):
-        u = " ".join(args)
+        if not args:
+            await ch.send(f"명령어 사용법 : ``{ctx.prefix}재난문자 [지역]``\n" \
+                    "지역 목록 : ``" + " ".join(_DISASTER_REGION) + "``")
+            return
         u = args[0]
         if u in _DISASTER_ALIAS.keys():
             u = _DISASTER_ALIAS[u]
