@@ -78,16 +78,16 @@ class Admin(Cog):
 
                 if send_accept.content == "y" or send_accept.content == "ㅇ" or send_accept.content == "d":
                     await self.__send(embed, ctx, True, False)
-                    if typ in ["속보", "뉴스", "해외", "확진", "사망"]:
+                    # if typ in ["속보", "뉴스", "해외", "확진", "사망"]:
                         # with open('./botdata/news.txt', 'rb') as f:
                         #     news = pickle.load(f)
-                        now = (datetime.datetime.utcnow(
-                        ) + datetime.timedelta(hours=9)).strftime('%m,%d,%H,%M').split(',')
-                        yy = now[2] + ":" + now[3]
-                        if int(now[2]) >= 12:
-                            yy = "오후 " + yy
-                        else:
-                            yy = "오전 " + yy
+                        # now = (datetime.datetime.utcnow(
+                        # ) + datetime.timedelta(hours=9)).strftime('%m,%d,%H,%M').split(',')
+                        # yy = now[2] + ":" + now[3]
+                        # if int(now[2]) >= 12:
+                        #     yy = "오후 " + yy
+                        # else:
+                        #     yy = "오전 " + yy
                         # news.append(
                         #     [now[0]+"월 "+now[1]+"일", yy, typ, mes.content])
                         # with open('./botdata/news.txt', 'wb') as f:
@@ -96,16 +96,16 @@ class Admin(Cog):
 
                 elif send_accept.content == "s" or send_accept.content == "ㄴ" or send_accept.content == "n":
                     await self.__send(embed, ctx, False, False)
-                    if typ in ["속보", "뉴스", "해외", "확진", "사망"]:
+                    # if typ in ["속보", "뉴스", "해외", "확진", "사망"]:
                         # with open('./botdata/news.txt', 'rb') as f:
                         #     news = pickle.load(f)
-                        now = (datetime.datetime.utcnow(
-                        ) + datetime.timedelta(hours=9)).strftime('%m,%d,%H,%M').split(',')
-                        yy = now[2] + ":" + now[3]
-                        if int(now[2]) >= 12:
-                            yy = "오후 " + yy
-                        else:
-                            yy = "오전 " + yy
+                        # now = (datetime.datetime.utcnow(
+                        # ) + datetime.timedelta(hours=9)).strftime('%m,%d,%H,%M').split(',')
+                        # yy = now[2] + ":" + now[3]
+                        # if int(now[2]) >= 12:
+                        #     yy = "오후 " + yy
+                        # else:
+                        #     yy = "오전 " + yy
                         # news.append(
                         #     [now[0]+"월 "+now[1]+"일", yy, typ, mes.content])
                         # with open('./botdata/news.txt', 'wb') as f:
