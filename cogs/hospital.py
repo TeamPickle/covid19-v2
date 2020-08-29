@@ -1,8 +1,8 @@
 from discord import Embed
 from discord.ext.commands import Cog, Context, command
 from bot import CovidBot
-import re
-import aiohttp
+import re, aiohttp
+import utils
 
 
 class Hospital(Cog):
@@ -13,6 +13,7 @@ class Hospital(Cog):
         self.logger.info("initialized")
     
     @command(aliases=["병원"])
+    @utils.userpos
     async def hospital(self, ctx: Context, *args):
         if len(args) >= 2:
             async with aiohttp.ClientSession() as session:
