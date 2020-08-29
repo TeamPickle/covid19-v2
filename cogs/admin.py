@@ -18,6 +18,14 @@ class Admin(Cog):
 
         if not os.path.exists("botdata"):
             os.mkdir("botdata")
+            async with aiohttp.ClientSession() as session:
+            async with session.get('https://coronaboard.kr/') as r:
+                res = await r.text('utf-8')
+            t = eval(re.findall(
+                'Global":{"KR":(.+?),"global"', res)[0])
+            with open("./botdata/patient.txt", "w") as f:
+                f.write(str(t))
+            
 
         self.logger.info("initialized")
 
@@ -35,6 +43,13 @@ class Admin(Cog):
         t = eval(re.findall(
             'Global":{"KR":(.+?),"global"', res)[0])
 
+        with open("./botdata/patient.txt", 'r') as f:
+            pat = f.read()
+
+        if pat != str(t):
+            with open("./botdata/patient.txt", 'w') as f:
+                f.write(str(t))
+        
         await makeGraph(t)
         graphmsg: Message = await ctx.send(file=File("./botdata/graph.png"))
         self.db["covid19"]["graphs"].insert_one({
