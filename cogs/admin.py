@@ -4,7 +4,7 @@ from bot import CovidBot
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 # from matplotlib import font_manager
-import aiohttp, re, datetime, os
+import aiohttp, re, datetime, os, asyncio, requests
 import utils
 
 
@@ -18,9 +18,8 @@ class Admin(Cog):
 
         if not os.path.exists("botdata"):
             os.mkdir("botdata")
-            async with aiohttp.ClientSession() as session:
-            async with session.get('https://coronaboard.kr/') as r:
-                res = await r.text('utf-8')
+
+            res = requests.get('https://coronaboard.kr/').text
             t = eval(re.findall(
                 'Global":{"KR":(.+?),"global"', res)[0])
             with open("./botdata/patient.txt", "w") as f:
