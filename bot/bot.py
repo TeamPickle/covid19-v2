@@ -69,7 +69,7 @@ class CovidBot(AutoShardedBot):
                     )
             if len(content) > 2000:
                 content = content[:1997] + "```"
-            await (await self.fetch_channel(logChannel)).send(content)
+            await self.get_channel(int(logChannel)).send(content)
         
 
 def get_command_prefix(bot: CovidBot, msg: Message):
