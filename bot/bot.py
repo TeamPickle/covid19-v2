@@ -55,8 +55,8 @@ class CovidBot(AutoShardedBot):
                 color=0xffff00
             )
             await ctx.send(embed=embed)
-            await (await self.fetch_channel(logChannel)).send(
-                ("Code: {t}\n" \
+
+            content: str = ("Code: {t}\n" \
                     "Requester: {requesterStr}#{requesterS}({requesterNum})\n" \
                     "Message: {message}\n" \
                     "```py\n{trace}```").format(
@@ -66,8 +66,10 @@ class CovidBot(AutoShardedBot):
                         requesterNum=ctx.author.id,
                         message=ctx.message.content,
                         trace="".join(traceback.format_exception(type(e), e, e.__traceback__))
-                )
-            )
+                    )
+            if len(content) > 2000:
+                content = content[:1997] + "```"
+            await (await self.fetch_channel(logChannel)).send(content)
         
 
 def get_command_prefix(bot: CovidBot, msg: Message):
