@@ -15,6 +15,7 @@ class MapType(Enum):
 class Map(Cog):
     def __init__(self, bot: CovidBot):
         self.bot = bot
+        self.db = bot.pickle_db
         self.logger = bot.get_logger(self)
         self.conn = sqlite3.connect("./maps/data.db")
         self.mapver = "00000"
@@ -41,7 +42,133 @@ class Map(Cog):
         self.logger.info("initialized")
     
     @command(aliases=["지도"])
+    @utils.userpos
     async def map(self, ctx: Context, *args):
+        args = " ".join(args)
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f"https://map.naver.com/v5/api/search?caller=pcweb&query={args}") as r:
+                res = await r.json()
+        await ctx.send(args + "(으)로 검색중입니다.")
+
+        name = "./maps/"+args[0].encode('utf-8').hex()+mapver+".png"
+        if os.path.isfile(name):
+            await ch.send(file=discord.File(name))
+            return
+        
+        async with ctx.typing():
+            res = res["result"]
+            try:
+                if res["address"]:
+                    if res["address"]["jibunsAddress"]:
+                        jibunAddress = res["address"]["jibunsAddress"]["list"][0]
+                        addressId = jibunAddress["id"]
+                        boundary = jibunAddress["boundary"]
+                    elif res["address"]["roadAddress"]:
+                        jibunAddress = res["address"]["roadAddress"]["list"][0]
+                        addressId = jibunAddress["id"]
+                        boundary = jibunAddress["boundary"]
+                    else:
+                        boundary = None
+                elif res["place"]:
+                    addressId = None
+                    jibunAddress = res["place"]
+                    boundary = jibunAddress["boundary"]
+                else:
+                    boundary = None
+
+                if boundary:
+                    x, y, z = getZoomByBoundary(boundary, 5)
+                    # print(boundary)
+
+                    if type(boundary) == dict:  # when search address
+                        minX, minY, maxX, maxY = map(
+                            float, boundary.values())
+                    else:  # when search place
+                        minX, maxY, maxX, minY = map(
+                            float, boundary)
+                    minX -= 0.5
+                    maxX += 0.5
+                    minY -= 0.5
+                    maxY += 0.5
+                    # print(x, y, z)
+                    x, y = map(int, deg2num(y, x, z))
+                    # print(x, y)
+                    # name = drawMapByDeg(y, x, z) # 다 꼬였다 에라이
+                    img = await getMap(z, x - 2, y - 2, 5,
+                                    5, MapType.BASIC)
+                    for i in conn.execute(
+                        'SELECT * FROM "main"."position" WHERE "lat" BETWEEN {} AND {}  AND "long" BETWEEN {} AND {};'
+                            .format(minY, maxY, minX, maxX)):
+                        # date = datetime.date.fromordinal(i[1])
+                        # if i[2] != -1:
+                        x1, y1 = deg2num(i[5], i[6], z)
+                        x1 = int((x1 - x + 2) * image_size[0])
+                        y1 = int((y1 - y + 2) * image_size[1])
+                        date = datetime.date.fromordinal(i[1])
+                        today = datetime.date.today()
+                        days = (today - date).days
+                        if days == 0:
+                            color = (0, 0, 255)
+                        elif days >= 4:
+                            color = (0, 255, 0)
+                        else:
+                            color = (0, 255, 255)
+                        # color = int(i[2])
+                        # (color & 0xff, color & 0xff00, color & 0xff0000)
+                        cv2.circle(img, (x1, y1), z //
+                                2 + 4, (0, 0, 0), -1)
+                        cv2.circle(img, (x1, y1), z //
+                                2 + 3, color, -1)
+
+                    if addressId:
+                        async with aiohttp.ClientSession() as session:
+                            async with session.get("https://map.naver.com/v5/api/wfs/stargate?output=geojson&targetcrs=epsg:4326&codetype=naver&request=codeToFeatures&level={}&keyword={}".format(z, addressId)) as res_1:
+                                feature = await res_1.json()
+                        geometry = feature["features"][0]["geometry"]
+                        coordss = geometry["coordinates"]
+                        if geometry["type"] == "MultiPolygon":
+                            for coords in coordss:
+                                codArr = None
+                                for coord in coords[0]:
+                                    x1, y1 = deg2num(
+                                        coord[1], coord[0], z)
+                                    x1 = int(
+                                        (x1 - x + 2) * image_size[0])
+                                    y1 = int(
+                                        (y1 - y + 2) * image_size[1])
+                                    try:
+                                        codArr = np.append(
+                                            codArr, [[x1, y1]], axis=0)
+                                    except ValueError:
+                                        codArr = [[x1, y1]]
+                                cv2.polylines(
+                                    img, [codArr], False, (255, 0, 0), 2)
+                        elif geometry["type"] == "Polygon":
+                            for coords in coordss:
+                                codArr = None
+                                for coord in coords:
+                                    x1, y1 = deg2num(
+                                        coord[1], coord[0], z)
+                                    x1 = int(
+                                        (x1 - x + 2) * image_size[0])
+                                    y1 = int(
+                                        (y1 - y + 2) * image_size[1])
+                                    try:
+                                        codArr = np.append(
+                                            codArr, [[x1, y1]], axis=0)
+                                    except ValueError:
+                                        codArr = [[x1, y1]]
+                                cv2.polylines(
+                                    img, [codArr], False, (0, 0, 255), 2)
+
+                    cv2.imwrite(name, img)
+                    await ch.send(file=discord.File(name))
+                else:
+                    await ch.send("검색결과가 없습니다. 좀더 넓은 범위로 검색해주세요.")
+            except KeyError:
+                await ch.send("해당 지역을 찾을 수 없습니다.")
+
+
         await ctx.send(str(self.bot.latency * 1000 // 1) + "ms")
     
     @command(name="genmap")
