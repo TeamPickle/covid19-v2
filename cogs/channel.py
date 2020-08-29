@@ -72,5 +72,19 @@ class Channel(Cog):
                 return
         await ctx.send(f"명령어 사용법 : ``{ctx.prefix}방해금지 [ㅇ/ㄴ]``")
 
+    @command(name="autocall", aliases=["현황알림"])
+    @utils.dm_command
+    async def autocall(self, ctx: Context, *args):
+        if args:
+            if args[0] in ["ㅇ", "y", "Y"]:
+                self.db["covid19"]["autocall"].insert_one({"_id": ctx.author.id})
+                await ctx.send("현황알림 옵션이 설정되었습니다.")
+                return
+            elif args[0] in ["ㄴ", "n", "N"]:
+                self.db["covid19"]["autocall"].remove({"_id": ctx.author.id})
+                await ctx.send("현황알림 옵션이 해제되었습니다.")
+                return
+        await ctx.send(f"명령어 사용법 : ``{ctx.prefix}현황알림 [ㅇ/ㄴ]``")
+
 def setup(bot: CovidBot):
     bot.add_cog(Channel(bot))
