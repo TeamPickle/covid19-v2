@@ -1,4 +1,8 @@
 # 코로나19 알림봇(Covid-19 alert discord bot)
+
+![python](https://img.shields.io/badge/python-3.8-blue.svg)
+[![Forum](https://img.shields.io/discord/680026950064275466)](http://forum.tpk.kr)
+
 Team Pickle에서 개발한 코로나19 알림봇의 소스입니다.    
 소스코드에는 GPL-3.0 라이선스가 적용되며, 봇의 프로필 사진 등에는 공공누리 제4 유형 라이선스가 적용됩니다.
 
