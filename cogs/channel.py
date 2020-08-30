@@ -17,7 +17,7 @@ class Channel(Cog):
     async def channel(self, ctx: Context):
         guild: Guild = ctx.guild
         if result := self.db["covid19"]["channels"].find_one({"_id": guild.id}):
-            await ctx.send(f"현재 전체공지를 띄우는 채널은 <#{result.channel}> 입니다.")
+            await ctx.send(f"현재 전체공지를 띄우는 채널은 <#{result["channel"]}> 입니다.")
         else:
             await ctx.send(f"현재 전체공지를 띄우는 채널은 <#{guild.text_channels[0].id}> 입니다.")
     
