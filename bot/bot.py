@@ -9,6 +9,8 @@ class CovidBot(AutoShardedBot):
     name = "CovidBot"
     def __init__(self, *args, **kwargs):
         kwargs.setdefault("command_prefix", get_command_prefix)
+        kwargs.setdefault("shard_count", 6)
+        kwargs.setdefault("shard_ids", [0])
         super().__init__(*args, help_command=None, **kwargs)
 
         self.logger = logging.getLogger(self.name or self.__class__.__name__)
@@ -36,7 +38,7 @@ class CovidBot(AutoShardedBot):
     async def on_ready(self):
         self.logger.info("Bot ready")
         if token := os.getenv("DBL_TOKEN"):
-            dbl.DBLClient(bot, token)
+            dbl.DBLClient(self, token)
 
     async def on_command_error(self, ctx: Context, e: Exception):
         if isinstance(e, CommandNotFound):
