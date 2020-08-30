@@ -7,9 +7,9 @@ from PIL import Image, ImageFont, ImageDraw
 
 
 class Graphic(Cog):
-    t_prev = {}
     def __init__(self, bot: CovidBot):
         self.bot = bot
+        self.t_prev = {}
         self.logger = bot.get_logger(self)
 
         self.logger.info("initialized")
@@ -45,7 +45,7 @@ class Graphic(Cog):
 
             chart = Image.open("./local/k.png").convert("RGBA")
             img.paste(chart, (213, 10), chart)
-            font = ImageFont.truetype("malgunbd.TTF", 40)
+            font = ImageFont.truetype("./malgunbd.TTF", 40)
 
             x2 = [20, 20, 20, 20, 20, 20, 20, 20, 20, 1390,
                     1390, 1390, 1390, 1390, 1390, 1390, 1390]
