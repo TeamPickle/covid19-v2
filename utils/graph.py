@@ -1,8 +1,10 @@
+import discord
+from bot import CovidBot
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import datetime
 
-async def makeGraph(t):
+async def makeGraph(t, bot: CovidBot):
     dtnow = datetime.datetime.now()
     x = list(datetime.datetime(dtnow.year, int(i.split('.')[0]), int(
         i.split('.')[1])) for i in t['date'][-10:])
@@ -59,3 +61,6 @@ async def makeGraph(t):
                      xytext=(0, 3),
                      ha='right')
     plt.savefig("./botdata/graph")
+
+    await bot.change_presence(status=discord.Status.do_not_disturb, activity=discord.Game(
+        name=f"!도움 | 신규확진 {y1[-1]}명 | shard0 {len(client.guilds)}서버"))

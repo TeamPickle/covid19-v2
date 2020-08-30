@@ -132,7 +132,7 @@ class Admin(Cog):
             with open("./botdata/patient.txt", 'w') as f:
                 f.write(str(t))
         
-        await utils.makeGraph(t)
+        await utils.makeGraph(t, self.bot)
         graphmsg: Message = await ctx.send(file=File("./botdata/graph.png"))
         self.db["covid19"]["graphs"].insert_one({
             "_id": graphmsg.attachments[0].url,
