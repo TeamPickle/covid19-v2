@@ -1,7 +1,8 @@
-from discord import Embed, Forbidden
+from discord import Embed, Forbidden, File
 from discord.ext.commands import Cog, Context, command
 from bot import CovidBot
-import aiohttp, re, math, asyncio
+import aiohttp, re, math, asyncio, os
+import utils
 
 _DISASTER_REGION = ["강원", "경기", "경남", "경북", "광주", "대구", "대전",
                    "부산", "서울", "울산", "인천", "전남", "전북", "제주", "충남", "충북", "세종"]
@@ -51,7 +52,23 @@ class Status(Cog):
             embed.set_footer(text="지자체에서 자체 집계한 자료와는 차이가 있을 수 있습니다.")
             embed.set_image(url=self.db["covid19"]["graphs"].find_one(sort=[("createdAt", -1)])["_id"])
             await ctx.send(embed=embed)
-            # TODO invoke make graph
+
+            with open("./botdata/patient.txt", 'r') as f:
+                pat = f.read()
+
+            if pat != str(t):
+                with open("./botdata/patient.txt", 'w') as f:
+                    f.write(str(t))
+
+                embed2 = Embed(title="🔄 현황 변경 안내")
+                embed2.description = embed.description
+                embed2.color = embed.color
+
+                await utils.makeGraph(t, self.bot)
+                graphch = self.bot.get_channel(int(os.getenv("GRAPH_CHANNEL")))
+                graphmsg = await graphch.send(file=File("./botdata/graph.png"))
+                
+                await utils.send(embed2, ctx, True, True, graphch)
             return
         elif 1 <= len(args) <= 2:
             u = args[0]
