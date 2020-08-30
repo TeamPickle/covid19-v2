@@ -43,7 +43,6 @@ class Map(Cog):
             "num"	INTEGER
         )""")
         self.conn.commit()
-        self.__genmap()
 
         self.logger.info("initialized")
     
