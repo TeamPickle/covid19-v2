@@ -205,9 +205,9 @@ class Status(Cog):
             elif u in _DISASTER_REGION:
                 t = eval(re.findall(
                     '"statByKrLocation":(.+?)}],"', res)[0] + "}]")
-                cnt = a = c = r = d = leapa = leapc = leapr = leapd = 0
+                cnt, a, c, r, d, leapa, leapc, leapr, leapd = (0,)*9
                 for item in t:
-                    if item['region'] == arg[1]:
+                    if item['region'] == arg:
                         a = item['active']
                         leapa = a - item['active_prev']
                         c = item['confirmed']
