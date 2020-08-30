@@ -3,23 +3,22 @@ from discord.ext.commands import Cog, Context, command
 from bot import CovidBot
 import utils
 
-_MAIN_COMMAND = "📊 **{prefix}현황 [시/도] [시/군/구]**\n" \
+_MAIN_COMMAND = "📊 **{prefix}현황 [시/도]**\n" \
                 "지역을 입력하지 않으면 전국 현황을 불러옵니다.\n" \
                 "시/도만 입력하신 경우 해당 시/도의 현황을 불러옵니다. ``예시: {prefix}현황 서울``\n" \
-                "시/군/구까지 입력하신 경우 해당 지역의 현황을 불러옵니다. ``예시: {prefix}현황 서울 중구``\n\n" \
                 "" \
                 "🚩 **{prefix}현황 [국가]**\n" \
                 "해당 국가의 현황을 불러옵니다. ``예시: {prefix}현황 미국``\n\n" \
                 "" \
                 "🌏 **{prefix}현황 세계**\n" \
-                "전 세계 국가의 현황을 불러옵니다.\n\n"
-                # "" \
-                # ":map: **{prefix}지도 [지역]**\n" \
-                # "해당 지역의 확진자 방문 장소를 지도로 보여줍니다.\n\n" \
+                "전 세계 국가의 현황을 불러옵니다.\n\n" \
+                "" \
+                ":map: **{prefix}지도 [지역]**\n" \
+                "해당 지역의 확진자 방문 장소를 지도로 보여줍니다.\n\n"
                 # "" \
                 # ":mask: **{prefix}마스크 [지역]**\n" \
                 # "해당 지역의 마스크 판매처 및 수량 정보를 불러옵니다. ``예시: {prefix}마스크 세종대로 110``"
-_SERVER_COMMAND = "``{prefix}뉴스 [키워드]`` ``{prefix}병원 [시/도] [시/군/구]`` ``{prefix}재난문자 [시/도]`` ``{prefix}그래픽`` ``{prefix}중요뉴스 ㅇ`` ``{prefix}방해금지 ㅇ``"
+_SERVER_COMMAND = "``{prefix}병원 [시/도] [시/군/구]`` ``{prefix}재난문자 [시/도]`` ``{prefix}그래픽`` ``{prefix}방해금지 ㅇ``"
 _DM_COMMAND = "``{prefix}병원 [시/도] [시/군/구]`` ``{prefix}재난문자 [시/도]`` ``{prefix}그래픽``"
 
 _SERVER_TITLE = "코로나19 알림봇 - 🌏서버용 도움말"
