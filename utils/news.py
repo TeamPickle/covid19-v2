@@ -34,7 +34,6 @@ async def send(embed: Embed, ctx: Context, imp: bool, iscurrent: bool, channel: 
                     await guild.text_channels[0].send(embed=embed)
         except Exception:
             j += 1
-            raise
     i = len(bot.guilds)
     await bot.get_channel(channel.id).send(f"{i - j}/{i}")
 
