@@ -63,4 +63,4 @@ async def makeGraph(t, bot: CovidBot):
     plt.savefig("./botdata/graph")
 
     await bot.change_presence(status=discord.Status.do_not_disturb, activity=discord.Game(
-        name=f"!도움 | 신규확진 {y1[-1]}명 | shard0 {len(client.guilds)}서버"))
+        name=f"!도움 | 신규확진 {y1[-1]}명 | shard0 {len(bot.guilds)}서버"))
