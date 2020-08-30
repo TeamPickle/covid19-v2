@@ -32,9 +32,9 @@ async def send(embed: Embed, ctx: Context, imp: bool, iscurrent: bool, channel: 
                     await bot.get_channel(chlist[guild.id]).send(embed=embed)
                 else:
                     await guild.text_channels[0].send(embed=embed)
-        except Exception:
+        except:
             j += 1
-            raise
+            pass
     i = len(bot.guilds)
     await bot.get_channel(channel.id).send(f"{i - j}/{i}")
 
@@ -45,6 +45,6 @@ async def send(embed: Embed, ctx: Context, imp: bool, iscurrent: bool, channel: 
         for userid in autocall:
             try:
                 await bot.get_user(userid).send(embed=embed)
-            except Exception:
-                raise
+            except:
+                pass
         await bot.get_channel(channel.id).send(f"autocall done: {len(autocall)}")
