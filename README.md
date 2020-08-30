@@ -1,7 +1,7 @@
 # 코로나19 알림봇(Covid-19 alert discord bot)
 
 ![python](https://img.shields.io/badge/python-3.8-blue.svg)
-[![Forum](https://img.shields.io/discord/680026950064275466)](http://forum.tpk.kr)
+[![Forum](https://discordapp.com/api/guilds/680026950064275466/widget.png)](http://forum.tpk.kr)
 
 Team Pickle에서 개발한 코로나19 알림봇의 소스입니다.    
 소스코드에는 GPL-3.0 라이선스가 적용되며, 봇의 프로필 사진 등에는 공공누리 제4 유형 라이선스가 적용됩니다.
@@ -40,9 +40,6 @@ pip install -r requirements.txt
 ### 설정 및 옵션
 * **!위치설정 (시/도) (시/군/구)**    
 내 위치를 등록합니다. 현황 등의 명령어에서 옵션을 입력할 필요가 없습니다.
-
-* **!중요뉴스 (ㅇ/ㄴ)**    
-이 옵션을 설정하면 중요 뉴스만 서버에 전달됩니다.
 
 * **!방해금지 (ㅇ/ㄴ)**    
 이 옵션을 설정하면 심야 시간에 뉴스가 전송되지 않습니다.
