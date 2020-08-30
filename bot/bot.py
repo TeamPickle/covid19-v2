@@ -38,7 +38,7 @@ class CovidBot(AutoShardedBot):
     async def on_ready(self):
         self.logger.info("Bot ready")
         if token := os.getenv("DBL_TOKEN"):
-            dbl.DBLClient(self.bot, token)
+            dbl.DBLClient(self, token)
 
     async def on_command_error(self, ctx: Context, e: Exception):
         if isinstance(e, CommandNotFound):
