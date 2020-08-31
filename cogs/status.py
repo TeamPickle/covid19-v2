@@ -68,19 +68,20 @@ class Status(Cog):
                 graphch = self.bot.get_channel(int(os.getenv("GRAPH_CHANNEL")))
                 graphmsg = await graphch.send(file=File("./botdata/graph.png"))
                 
-                await utils.send(embed2, ctx, True, True, graphch)
+                await utils.send(embed2, ctx, True, graphch)
             return
-        elif 1 <= len(args) <= 2:
-            u = args[0]
-            if u in _DISASTER_ALIAS.keys():
-                u = _DISASTER_ALIAS[u]
+
+        else:
+            arg = " ".join(args)
+            if arg in _DISASTER_ALIAS.keys():
+                arg = _DISASTER_ALIAS[arg]
             
             async with aiohttp.ClientSession() as session:
                 async with session.get('https://coronaboard.kr/') as r:
                     res = await r.text('utf-8')
             t: dict = eval('{"CN":' + re.findall(',"CN":(.+?),"North', res)[0] + "}")
             
-            arg = " ".join(args)
+            
             if arg in t.values() or arg in ["오스트레일리아", "우리나라", "한국"]:
                 country = arg
                 if arg == "오스트레일리아":
@@ -122,105 +123,27 @@ class Status(Cog):
                 )
                 await ctx.send(embed=embed)
                 return
-            elif arg in ["세계", "지구", "전세계", "world"]:
-                t = eval(re.findall('"statGlobalNow":(.+?),"stat', res)
-                         [0].replace("null", '"null"'))
 
-                t = sorted(
-                    t, key=lambda country: country['confirmed'], reverse=True)
-                label = eval(re.findall('"ko":(.+?)"},', res)[0]+'"}')
-
-                gl = eval(re.findall(
-                    ',"global":(.+?)},"chartForDomestic', res)[0])
-                desc = "<:chiryojung:711728328985411616> 치료중 : "+format(gl['active'][-1], ',')+"\n"\
-                       "<:nujeok:687907310923677943> 확진자 : "+format(gl['confirmed_acc'][-1], ',')+"("+("▲" + str(gl['confirmed'][-1]) if gl['confirmed'][-1] > 0 else "-0") + ")\n"\
-                       "<:wanchi:687907312052076594> 완치 : "+format(gl['released_acc'][-1], ',')+"("+("▲" + str(gl['released'][-1]) if gl['released'][-1] > 0 else "-0") + ")\n"\
-                       "<:samang:687907312123510817> 사망 : "+format(gl['death_acc'][-1], ',')+"("+("▲" + str(gl['death'][-1]) if gl['death'][-1] > 0 else "-0") + ")\n\n"\
-                       "🚩 발생국 : "+str(len(t))+"\n"
-                embed = Embed(
-                    title="🗺️ 세계 코로나 현황",
-                    description=desc +
-                    "(1/" + str(math.ceil(len(t) / 10)+1) + ")",
-                    color=0x00cccc
-                )
-                em = await ctx.send(embed=embed)
-
-                try:
-                    await em.add_reaction("◀")
-                    await em.add_reaction("▶")
-                    page = 0
-
-                    def check(reaction, user):
-                        return user == ctx.author and reaction.message.embeds[0].to_dict() == em.embeds[0].to_dict() and (
-                            reaction.emoji == "◀" or reaction.emoji == "▶") and reaction.message.id == em.id
-
-                    while True:
-                        try:
-                            reaction, user = await self.bot.wait_for('reaction_add', timeout=30.0, check=check)
-                        except asyncio.TimeoutError:
-                            try:
-                                await em.clear_reactions()
-                            except:
-                                pass
-                            break
-                        else:
-                            try:
-                                await em.remove_reaction(reaction.emoji, user)
-                            except:
-                                pass
-                            if reaction.emoji == "◀":
-                                if page == 0:
-                                    page = math.ceil(len(t) / 10)
-                                else:
-                                    page -= 1
-                            else:
-                                if page == math.ceil(len(t) / 10):
-                                    page = 0
-                                else:
-                                    page += 1
-
-                            desc = ""
-                            if page == 0:
-                                desc = "<:chiryojung:711728328985411616> 치료중 : "+format(gl['active'][-1], ',')+"\n"\
-                                    "<:nujeok:687907310923677943> 확진자 : "+format(gl['confirmed_acc'][-1], ',')+"("+("▲" + str(gl['confirmed'][-1]) if gl['confirmed'][-1] > 0 else "-0") + ")\n"\
-                                    "<:wanchi:687907312052076594> 완치 : "+format(gl['released_acc'][-1], ',')+"("+("▲" + str(gl['released'][-1]) if gl['released'][-1] > 0 else "-0") + ")\n"\
-                                    "<:samang:687907312123510817> 사망 : "+format(gl['death_acc'][-1], ',')+"("+("▲" + str(gl['death'][-1]) if gl['death'][-1] > 0 else "-0") + ")\n\n"\
-                                    "🚩 발생국 : "+str(len(t))+"\n"
-                            else:
-                                for i in range((page - 1) * 10, min(page * 10, len(t))):
-                                    desc += t[i]['flag'].lower() + " **" + label[t[i]['cc']] + "** : <:nujeok:687907310923677943> " + format(t[i]['confirmed'], ",") + " / <:wanchi:687907312052076594> " + format(
-                                        t[i]['released'], ",") + " / <:samang:687907312123510817> " + format(t[i]['death'], ",") + "\n"
-
-                            desc += "(" + str(page+1) + "/" + \
-                                str(math.ceil(len(t) / 10)+1) + ")"
-                            embed = Embed(
-                                title="🗺️ 세계 코로나 현황",
-                                description=desc,
-                                color=0x00cccc
-                            )
-                            await em.edit(embed=embed)
-                except Forbidden:
-                    await ctx.send("필요한 권한(메시지 관리, 이모티콘 관리, 반응 추가하기)이 할당되지 않아 기능이 제대로 작동하지 않습니다. 권한을 할당해주세요.")
-                return
-            elif u in _DISASTER_REGION:
+            elif arg in _DISASTER_REGION:
                 t = eval(re.findall(
                     '"statByKrLocation":(.+?)}],"', res)[0] + "}]")
-                cnt, a, c, r, d, leapa, leapc, leapr, leapd = (0,)*9
+                a, c, c7, r, d, leapa, leapc, leapr, leapd = (0,)*9
                 for item in t:
                     if item['region'] == arg:
                         a = item['active']
                         leapa = a - item['active_prev']
                         c = item['confirmed']
+                        c7 = item['confirmed_sevenDays']
                         leapc = c - item['confirmed_prev']
                         r = item['released']
                         leapr = r - item['released_prev']
                         d = item['death']
                         leapd = d - item['death_prev']
-                    cnt += item['confirmed']
+                        break
                 
                 embed = Embed(
-                    title="시/도 확진자 수 조회 - " + u,
-                    description=f"<:nujeok:687907310923677943> **확진자** : {c}명({increase(leapc)}) - {round(c/cnt*100, 1)}\n" \
+                    title="시/도 확진자 수 조회 - " + arg,
+                    description=f"<:nujeok:687907310923677943> **확진자** : {c}명({increase(leapc)}) - 최근 7일 {c7}명\n" \
                             f"<:chiryojung:711728328985411616> **치료중** : {a}명({increase(leapa)})\n" \
                             f"<:wanchi:687907312052076594> 완치 : {r}명({increase(leapr)})\n" \
                             f"<:samang:687907312123510817> 사망 : {d}명({increase(leapd)})\n",
@@ -228,10 +151,94 @@ class Status(Cog):
                 )
                 await ctx.send(embed=embed)
                 return
-        await ctx.send(("전국 통계: ``{prefix}현황``\n" \
-                    "시/도 통계: ``{prefix}현황 [시/도]``\n" \
-                    "시/군/구 통계: ``{prefix}현황 [시/도] [시/군/구]``\n" \
-                    "국가별 통계: ``{prefix}현황 [국가]``").format(prefix=ctx.prefix))
+
+        await ctx.send(("전국 통계: ``{prefix}현황``, 시/도 통계: ``{prefix}현황 [시/도]``").format(prefix=ctx.prefix))
+
+    @command(aliases=["세계현황", "지구현황"])
+    async def worldstatus(self, ctx:Context):
+        async with aiohttp.ClientSession() as session:
+            async with session.get('https://coronaboard.kr/') as r:
+                res = await r.text('utf-8')
+
+        t = eval(re.findall('"statGlobalNow":(.+?),"stat', res)
+                    [0].replace("null", '"null"'))
+
+        t = sorted(
+            t, key=lambda country: country['confirmed'], reverse=True)
+        label = eval(re.findall('"ko":(.+?)"},', res)[0]+'"}')
+
+        gl = eval(re.findall(
+            ',"global":(.+?)},"chartForDomestic', res)[0])
+        desc = "<:chiryojung:711728328985411616> 치료중 : "+format(gl['active'][-1], ',')+"\n"\
+                "<:nujeok:687907310923677943> 확진자 : "+format(gl['confirmed_acc'][-1], ',')+"("+("▲" + str(gl['confirmed'][-1]) if gl['confirmed'][-1] > 0 else "-0") + ")\n"\
+                "<:wanchi:687907312052076594> 완치 : "+format(gl['released_acc'][-1], ',')+"("+("▲" + str(gl['released'][-1]) if gl['released'][-1] > 0 else "-0") + ")\n"\
+                "<:samang:687907312123510817> 사망 : "+format(gl['death_acc'][-1], ',')+"("+("▲" + str(gl['death'][-1]) if gl['death'][-1] > 0 else "-0") + ")\n\n"\
+                "🚩 발생국 : "+str(len(t))+"\n"
+        embed = Embed(
+            title="🗺️ 세계 코로나 현황",
+            description=desc +
+            "(1/" + str(math.ceil(len(t) / 10)+1) + ")",
+            color=0x00cccc
+        )
+        em = await ctx.send(embed=embed)
+
+        try:
+            await em.add_reaction("◀")
+            await em.add_reaction("▶")
+            page = 0
+
+            def check(reaction, user):
+                return user == ctx.author and reaction.message.embeds[0].to_dict() == em.embeds[0].to_dict() and (
+                    reaction.emoji == "◀" or reaction.emoji == "▶") and reaction.message.id == em.id
+
+            while True:
+                try:
+                    reaction, user = await self.bot.wait_for('reaction_add', timeout=30.0, check=check)
+                except asyncio.TimeoutError:
+                    try:
+                        await em.clear_reactions()
+                    except:
+                        pass
+                    break
+                else:
+                    try:
+                        await em.remove_reaction(reaction.emoji, user)
+                    except:
+                        pass
+                    if reaction.emoji == "◀":
+                        if page == 0:
+                            page = math.ceil(len(t) / 10)
+                        else:
+                            page -= 1
+                    else:
+                        if page == math.ceil(len(t) / 10):
+                            page = 0
+                        else:
+                            page += 1
+
+                    desc = ""
+                    if page == 0:
+                        desc = "<:chiryojung:711728328985411616> 치료중 : "+format(gl['active'][-1], ',')+"\n"\
+                            "<:nujeok:687907310923677943> 확진자 : "+format(gl['confirmed_acc'][-1], ',')+"("+("▲" + str(gl['confirmed'][-1]) if gl['confirmed'][-1] > 0 else "-0") + ")\n"\
+                            "<:wanchi:687907312052076594> 완치 : "+format(gl['released_acc'][-1], ',')+"("+("▲" + str(gl['released'][-1]) if gl['released'][-1] > 0 else "-0") + ")\n"\
+                            "<:samang:687907312123510817> 사망 : "+format(gl['death_acc'][-1], ',')+"("+("▲" + str(gl['death'][-1]) if gl['death'][-1] > 0 else "-0") + ")\n\n"\
+                            "🚩 발생국 : "+str(len(t))+"\n"
+                    else:
+                        for i in range((page - 1) * 10, min(page * 10, len(t))):
+                            desc += t[i]['flag'].lower() + " **" + label[t[i]['cc']] + "** : <:nujeok:687907310923677943> " + format(t[i]['confirmed'], ",") + " / <:wanchi:687907312052076594> " + format(
+                                t[i]['released'], ",") + " / <:samang:687907312123510817> " + format(t[i]['death'], ",") + "\n"
+
+                    desc += "(" + str(page+1) + "/" + \
+                        str(math.ceil(len(t) / 10)+1) + ")"
+                    embed = Embed(
+                        title="🗺️ 세계 코로나 현황",
+                        description=desc,
+                        color=0x00cccc
+                    )
+                    await em.edit(embed=embed)
+        except Forbidden:
+            await ctx.send("필요한 권한(메시지 관리, 이모티콘 관리, 반응 추가하기)이 할당되지 않아 기능이 제대로 작동하지 않습니다. 권한을 할당해주세요.")
+        return
 
     
 

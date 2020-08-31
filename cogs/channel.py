@@ -40,22 +40,6 @@ class Channel(Cog):
                 return
         await ctx.send(f"명령어 사용법 : ``{ctx.prefix}채널설정 #공지``")
 
-    @command(name="noti", aliases=["중요뉴스"])
-    @utils.server_command
-    @utils.guild_permission("서버관리자만 중요뉴스 받기 옵션을 지정할 수 있습니다.")
-    async def noti(self, ctx: Context, *args):
-        if args:
-            guild: Guild = ctx.guild
-            if args[0] in ["ㅇ", "y", "Y"]:
-                self.db["covid19"]["noti"].insert_one({"_id": guild.id})
-                await ctx.send("중요뉴스만 받기 옵션이 설정되었습니다.")
-                return
-            elif args[0] in ["ㄴ", "n", "N"]:
-                self.db["covid19"]["noti"].remove({"_id": guild.id})
-                await ctx.send("중요뉴스만 받기 옵션이 해제되었습니다.")
-                return
-        await ctx.send(f"명령어 사용법 : ``{ctx.prefix}중요뉴스 [ㅇ/ㄴ]``")
-
     @command(name="dnd", aliases=["방해금지"])
     @utils.server_command
     @utils.guild_permission("서버관리자만 방해금지 모드 옵션을 지정할 수 있습니다.")

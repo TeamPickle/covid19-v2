@@ -3,7 +3,7 @@ from discord.ext.commands import Context
 from bot import CovidBot
 import datetime
 
-async def send(embed: Embed, ctx: Context, imp: bool, iscurrent: bool, channel: TextChannel = None):
+async def send(embed: Embed, ctx: Context, iscurrent: bool, channel: TextChannel = None):
     """
     imp: 중요공지 여부
     iscurrent: 현황 변경?
@@ -16,8 +16,6 @@ async def send(embed: Embed, ctx: Context, imp: bool, iscurrent: bool, channel: 
 
     await bot.get_channel(channel.id).send("start")
     j = 0
-    blocklist = list(db["covid19"]["noti"].find())
-    blocklist = list(map(lambda x: x['_id'], blocklist))
     dnd = list(db["covid19"]["dnd"].find())
     dnd = list(map(lambda x: x['_id'], dnd))
     chlist = list(db["covid19"]["channels"].find())
@@ -27,7 +25,7 @@ async def send(embed: Embed, ctx: Context, imp: bool, iscurrent: bool, channel: 
 
     for guild in bot.guilds:
         try:
-            if not((not imp and guild.id in blocklist) or (not good and guild.id in dnd)):
+            if good or (guild.id  not in dnd):
                 if guild.id in chlist.keys():
                     await bot.get_channel(chlist[guild.id]).send(embed=embed)
                 else:

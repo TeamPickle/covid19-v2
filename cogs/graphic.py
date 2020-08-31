@@ -9,24 +9,24 @@ from PIL import Image, ImageFont, ImageDraw
 class Graphic(Cog):
     def __init__(self, bot: CovidBot):
         self.bot = bot
-        self.t_prev = {}
+        self.c_prev = []
         self.logger = bot.get_logger(self)
 
         self.logger.info("initialized")
     
-    @command(aliases=["그래픽"])
+    @command(aliases=["국내현황", "지역현황"])
     async def graphic(self, ctx: Context):
         async with aiohttp.ClientSession() as session:
-            async with session.get('https://coronaboard.kr/') as r:
+            async with session.get('http://ncov.mohw.go.kr/bdBoardList_Real.do?brdId=1&brdGubun=13') as r:
                 res = await r.text('utf-8')
-        t = eval(re.findall('"statByKrLocation":(.+?}]),', res)[0])
-        if t != self.t_prev:
-            self.t_prev = t
-            k = {}
-            cnt = 0
-            for item in t:
-                cnt += item['confirmed']
-                k[item['region']] = item['confirmed']
+        row = re.findall('<th scope="row">(.+?)</th>', res)
+        confirmed = re.findall('headers="status_level l_type1">(.+?)</td>', res)
+        sum_confirmed = re.findall('headers="status_con s_type1">(.+?)</td>', res)
+        for i in range(len(row)):
+            confirmed[i] = int(confirmed[i].replace(",", ""))
+            sum_confirmed[i] = int(sum_confirmed[i].replace(",", ""))
+        if True: #t != self.t_prev:
+            self.c_prev = confirmed
 
             img = Image.new("RGBA", (1665, 1125), (30, 30, 30))
             draw = ImageDraw.Draw(img)
@@ -41,19 +41,23 @@ class Graphic(Cog):
                     '전남', '강원', '충북', '경북', '대구', '울산', '부산', '경남', '제주']
 
             for i in range(17):
-                img = alpha(k[loc[i]], cnt, x[i], y[i], i + 1, img)
+                for j in range(len(row)):
+                    if row[j] == loc[i]:
+                        img = alpha(confirmed[j], confirmed[0], x[i], y[i], i+1, img)
+                        break
 
             chart = Image.open("./local/k.png").convert("RGBA")
             img.paste(chart, (213, 10), chart)
             font = ImageFont.truetype("./malgunbd.TTF", 40)
 
-            x2 = [20, 20, 20, 20, 20, 20, 20, 20, 20, 1390,
-                    1390, 1390, 1390, 1390, 1390, 1390, 1390]
-            y2 = [23, 200, 300, 410, 520, 675, 775, 915,
-                    1000, 167, 253, 423, 513, 685, 775, 933, 1023]
+            x2 = [20, 20, 20, 20, 20, 20, 20, 20, 20, 1390, 1390, 1390, 1390, 1390, 1390, 1390, 1390]
+            y2 = [23, 200, 300, 410, 520, 675, 775, 915, 1000, 167, 253, 423, 513, 685, 775, 933, 1023]
             for i in range(17):
-                draw.text((x2[i], y2[i]), str(k[loc[i]]) + "(" + str(round(k[loc[i]] / cnt * 100, 1)) + "%)", (0, 0, 0),
-                            font=font)
+                for j in range(len(row)):
+                    if row[j] == loc[i]:
+                        draw.text((x2[i], y2[i]), str(sum_confirmed[j]) + "(" + ("▲" + str(confirmed[j]) if confirmed[j] > 0 else "-0") + ")", (0, 0, 0), font=font)
+                    
+
 
             img.save('./local/final.png')
             await ctx.send(file=File('./local/final.png'))

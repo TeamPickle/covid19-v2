@@ -71,46 +71,7 @@ class Admin(Cog):
             send_accept = await self.bot.wait_for('message', check=check, timeout=100)
 
             if send_accept.content == "y" or send_accept.content == "ㅇ" or send_accept.content == "d":
-                await ctx.send("중요? [ㅇ/ㄴ]")
-                send_accept = await self.bot.wait_for('message', check=check, timeout=100)
-
-                if send_accept.content == "y" or send_accept.content == "ㅇ" or send_accept.content == "d":
-                    await utils.send(embed, ctx, True, False)
-                    # if typ in ["속보", "뉴스", "해외", "확진", "사망"]:
-                        # with open('./botdata/news.txt', 'rb') as f:
-                        #     news = pickle.load(f)
-                        # now = (datetime.datetime.utcnow(
-                        # ) + datetime.timedelta(hours=9)).strftime('%m,%d,%H,%M').split(',')
-                        # yy = now[2] + ":" + now[3]
-                        # if int(now[2]) >= 12:
-                        #     yy = "오후 " + yy
-                        # else:
-                        #     yy = "오전 " + yy
-                        # news.append(
-                        #     [now[0]+"월 "+now[1]+"일", yy, typ, mes.content])
-                        # with open('./botdata/news.txt', 'wb') as f:
-                        #     pickle.dump(
-                        #         news, f, protocol=pickle.HIGHEST_PROTOCOL)
-
-                elif send_accept.content == "s" or send_accept.content == "ㄴ" or send_accept.content == "n":
-                    await utils.send(embed, ctx, False, False)
-                    # if typ in ["속보", "뉴스", "해외", "확진", "사망"]:
-                        # with open('./botdata/news.txt', 'rb') as f:
-                        #     news = pickle.load(f)
-                        # now = (datetime.datetime.utcnow(
-                        # ) + datetime.timedelta(hours=9)).strftime('%m,%d,%H,%M').split(',')
-                        # yy = now[2] + ":" + now[3]
-                        # if int(now[2]) >= 12:
-                        #     yy = "오후 " + yy
-                        # else:
-                        #     yy = "오전 " + yy
-                        # news.append(
-                        #     [now[0]+"월 "+now[1]+"일", yy, typ, mes.content])
-                        # with open('./botdata/news.txt', 'wb') as f:
-                        #     pickle.dump(
-                        #         news, f, protocol=pickle.HIGHEST_PROTOCOL)
-                else:
-                    await ctx.send("전송이 취소되었습니다.")
+                await utils.send(embed, ctx, False)
             else:
                 await ctx.send("전송이 취소되었습니다.")
         except asyncio.TimeoutError:
@@ -148,7 +109,7 @@ class Admin(Cog):
             color=0xff4848
         )
         embed.set_footer(text="위 뉴스는 자동으로 보내진 속보입니다.")
-        await utils.send(embed, ctx, False, False)
+        await utils.send(embed, ctx, False)
         
 
 def setup(bot: CovidBot):
