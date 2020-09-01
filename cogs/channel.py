@@ -30,6 +30,7 @@ class Channel(Cog):
             guild: Guild = ctx.guild
             if msg.channel_mentions:
                 channel: TextChannel = msg.channel_mentions[0]
+                
                 self.db["covid19"]["channels"].update_one(
                     {"_id": guild.id}, {
                         "$set": {
@@ -47,7 +48,7 @@ class Channel(Cog):
         if args:
             guild: Guild = ctx.guild
             if args[0] in ["ㅇ", "y", "Y"]:
-                self.db["covid19"]["dnd"].insert_one({"_id": guild.id})
+                self.db["covid19"]["dnd"].save({"_id": guild.id})
                 await ctx.send("방해금지 모드가 설정되었습니다.")
                 return
             elif args[0] in ["ㄴ", "n", "N"]:
@@ -61,7 +62,7 @@ class Channel(Cog):
     async def autocall(self, ctx: Context, *args):
         if args:
             if args[0] in ["ㅇ", "y", "Y"]:
-                self.db["covid19"]["autocall"].insert_one({"_id": ctx.author.id})
+                self.db["covid19"]["autocall"].save({"_id": ctx.author.id})
                 await ctx.send("현황알림 옵션이 설정되었습니다.")
                 return
             elif args[0] in ["ㄴ", "n", "N"]:
