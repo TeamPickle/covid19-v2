@@ -37,12 +37,16 @@ class Status(Cog):
             per_dth = round(dth/inf*100, 1)
             per_cur = round(cur/inf*100, 1)
 
+            async with aiohttp.ClientSession() as session:
+                async with session.get("http://ncov.mohw.go.kr/bdBoardList_Real.do?brdId=1&brdGubun=13") as r:
+                    foreign = int(re.findall('headers="status_level l_type2">(.+?)</td>', await r.text('utf-8'))[0].replace(",", ""))
+
             date = t["date"][-1]
             active = t["active"][-1]
 
             embed = Embed(
                 title=f"🇰🇷 대한민국 코로나19 확진 정보 ({date} 기준)",
-                description=f"<:nujeok:687907310923677943> **확진자** : {inf}({increase(leapa)})\n" \
+                description=f"<:nujeok:687907310923677943> **확진자** : {inf}({increase(leapa)}, 해외유입 +{foreign})\n" \
                             f"<:wanchi:687907312052076594> **완치** : {cur}({increase(leapb)}) - {per_cur}%\n" \
                             f"<:samang:687907312123510817> **사망** : {dth}({increase(leapc)}) - {per_dth}%\n\n" \
                             f"<:chiryojung:711728328985411616> **치료중** : {active}\n" \
