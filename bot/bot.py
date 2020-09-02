@@ -9,8 +9,6 @@ class CovidBot(AutoShardedBot):
     name = "CovidBot"
     def __init__(self, *args, **kwargs):
         kwargs.setdefault("command_prefix", get_command_prefix)
-        kwargs.setdefault("shard_count", 4)
-        #kwargs.setdefault("shard_ids", (0))
         super().__init__(*args, help_command=None, **kwargs)
 
         self.logger = logging.getLogger(self.name or self.__class__.__name__)
