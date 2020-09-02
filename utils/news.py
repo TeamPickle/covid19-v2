@@ -1,7 +1,7 @@
 from discord import TextChannel, Embed
 from discord.ext.commands import Context
 from bot import CovidBot
-import datetime
+import datetime, os
 
 async def send(embed: Embed, ctx: Context, iscurrent: bool, channel: TextChannel = None):
     """
@@ -36,7 +36,7 @@ async def send(embed: Embed, ctx: Context, iscurrent: bool, channel: TextChannel
     i = len(bot.guilds)
     await bot.get_channel(channel.id).send(f"{i - j}/{i}")
 
-    if iscurrent:
+    if iscurrent and os.getenv("BETA")=="0":
         autocall = list(db["covid19"]["autocall"].find())
         autocall = list(map(lambda x: x['_id'], autocall))
 
