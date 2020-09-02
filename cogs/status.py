@@ -1,7 +1,7 @@
 from discord import Embed, Forbidden, File
 from discord.ext.commands import Cog, Context, command
 from bot import CovidBot
-import aiohttp, re, math, asyncio, os
+import aiohttp, re, math, asyncio, os, datetime
 import utils
 
 _DISASTER_REGION = ["강원", "경기", "경남", "경북", "광주", "대구", "대전",
@@ -70,15 +70,19 @@ class Status(Cog):
                 with open("./botdata/patient.txt", 'w') as f:
                     f.write(str(t))
 
-                embed2 = Embed(title="🔄 현황 변경 안내")
-                embed2.description = embed.description
-                embed2.color = embed.color
-
                 await utils.makeGraph(t, self.bot)
                 graphch = self.bot.get_channel(int(os.getenv("GRAPH_CHANNEL")))
                 graphmsg = await graphch.send(file=File("./botdata/graph.png"))
-                
-                await utils.send(embed2, ctx, True, graphch)
+                self.db["covid19"]["graphs"].insert_one({
+                    "_id": graphmsg.attachments[0].url,
+                    "createdAt": datetime.datetime.utcnow()
+                })
+
+                embed2 = Embed(title="🔄 현황 변경 안내")
+                embed2.description = embed.description
+                embed2.color = embed.color
+                embed2.set_image(url=graphmsg.attachments[0].url)
+                await utils.send(embed2, ctx, False, graphch)
             return
 
         else:
