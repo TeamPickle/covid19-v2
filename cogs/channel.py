@@ -12,7 +12,7 @@ class Channel(Cog):
 
         self.logger.info("initialized")
     
-    @command(name="channel", aliases=["채널"])
+    @command(aliases=["채널"])
     @utils.server_command
     async def channel(self, ctx: Context):
         guild: Guild = ctx.guild
@@ -21,7 +21,7 @@ class Channel(Cog):
         else:
             await ctx.send(f"현재 전체공지를 띄우는 채널은 <#{guild.text_channels[0].id}> 입니다.")
     
-    @command(name="setchannel", aliases=["채널설정"])
+    @command(aliases=["채널설정"])
     @utils.server_command
     @utils.guild_permission("서버관리자만 공지 채널을 지정할 수 있습니다.")
     async def set_channel(self, ctx: Context, *args):
@@ -40,7 +40,7 @@ class Channel(Cog):
                 return
         await ctx.send(f"명령어 사용법 : ``{ctx.prefix}채널설정 #공지``")
 
-    @command(name="dnd", aliases=["방해금지"])
+    @command(aliases=["방해금지"])
     @utils.server_command
     @utils.guild_permission("서버관리자만 방해금지 모드 옵션을 지정할 수 있습니다.")
     async def dnd(self, ctx: Context, *args):
@@ -56,7 +56,7 @@ class Channel(Cog):
                 return
         await ctx.send(f"명령어 사용법 : ``{ctx.prefix}방해금지 [ㅇ/ㄴ]``")
 
-    @command(name="autocall", aliases=["현황알림"])
+    @command(aliases=["현황알림"])
     @utils.dm_command
     async def autocall(self, ctx: Context, *args):
         if args:

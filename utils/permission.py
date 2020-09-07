@@ -1,9 +1,11 @@
 from discord import Member
 from discord.ext.commands import Context
 from bot import CovidBot
+from functools import wraps
 
 def checkadmin(super_admin=False):
     def decorator(func):
+        @wraps(func)
         async def wrapper(self, ctx: Context, *args):
             bot: CovidBot = ctx.bot
             if super_admin:
@@ -17,6 +19,7 @@ def checkadmin(super_admin=False):
 
 def guild_permission(message: str, idx: int=3):
     def decorator(func):
+        @wraps(func)
         async def wrapper(self, ctx: Context, *args):
             author: Member = ctx.author
             if author.guild_permissions.value >> (idx - 1) & 1:

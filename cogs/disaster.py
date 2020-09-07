@@ -22,7 +22,7 @@ class Disaster(Cog):
 
         self.logger.info("initialized")
     
-    @command(name="disaster", aliases=["재난문자"])
+    @command(aliases=["재난문자"])
     @utils.userpos
     async def disaster(self, ctx: Context, *args):
         if not args:

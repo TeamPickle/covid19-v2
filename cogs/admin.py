@@ -27,7 +27,7 @@ class Admin(Cog):
         self.logger.info("initialized")
 
     
-    @command(name="send", aliases=["전송"])
+    @command(aliases=["전송"])
     @utils.checkadmin()
     async def send(self, ctx: Context, *args):
         if not args:
@@ -77,7 +77,7 @@ class Admin(Cog):
         except asyncio.TimeoutError:
             await ctx.send("시간이 만료되었습니다.")
     
-    @command(name="graph")
+    @command()
     @utils.checkadmin()
     async def graph(self, ctx: Context):
         async with aiohttp.ClientSession() as session:
@@ -100,7 +100,7 @@ class Admin(Cog):
             "createdAt": datetime.datetime.utcnow()
         })
 
-    @command(name="yna", aliases=["연합뉴스"])
+    @command(aliases=["연합뉴스"])
     @utils.checkadmin()
     async def yna(self, ctx: Context, *args):
         embed = Embed(

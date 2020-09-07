@@ -46,7 +46,7 @@ class Map(Cog):
 
         self.logger.info("initialized")
     
-    @command(name="map", aliases=["지도"])
+    @command(aliases=["지도"])
     @utils.userpos
     async def map(self, ctx: Context, *args):
         args = " ".join(args)
@@ -176,7 +176,7 @@ class Map(Cog):
             except KeyError:
                 await ctx.send("해당 지역을 찾을 수 없습니다.")
     
-    @command(name="genmap")
+    @command()
     @utils.checkadmin()
     async def genmap(self, ctx: Context):
         await self.__genmap()

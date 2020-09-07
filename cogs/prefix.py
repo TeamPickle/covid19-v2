@@ -12,7 +12,7 @@ class Prefix(Cog):
 
         self.logger.info("initialized")
     
-    @command(name="setprefix", aliases=["접두사설정"])
+    @command(aliases=["접두사설정"])
     @utils.server_command
     @utils.guild_permission("서버관리자만 접두사를 변경할 수 있습니다.")
     async def setprefix(self, ctx: Context, *args):
@@ -27,7 +27,7 @@ class Prefix(Cog):
         }, upsert=True)
         await ctx.send(f"{prefix}(으)로 접두사를 변경했습니다. ``{prefix}도움``과 같이 사용하실 수 있습니다.")
     
-    @command(name="resetprefix", aliases=["접두사초기화"])
+    @command(aliases=["접두사초기화"])
     @utils.server_command
     @utils.guild_permission("서버관리자만 접두사를 변경할 수 있습니다.")
     async def resetprefix(self, ctx: Context, *args):
