@@ -1,7 +1,7 @@
 from discord import Embed, Forbidden, File
 from discord.ext.commands import Cog, Context, command
 from bot import CovidBot
-import aiohttp, re, math, asyncio, os
+import aiohttp, re, math, asyncio, os, datetime
 import utils
 
 _DISASTER_REGION = ["강원", "경기", "경남", "경북", "광주", "대구", "대전",
@@ -37,13 +37,23 @@ class Status(Cog):
             per_dth = round(dth/inf*100, 1)
             per_cur = round(cur/inf*100, 1)
 
+            async with aiohttp.ClientSession() as session:
+                async with session.get("http://ncov.mohw.go.kr/bdBoardList_Real.do?brdId=1&brdGubun=13") as r:
+                    res = await r.text('utf-8')
+
             date = t["date"][-1]
             active = t["active"][-1]
+            
+            foreign_time = re.findall('<p class="info"><span> (.+?)</span>', res)[0]
+            if foreign_time.startswith(date.split('.')[0].zfill(2)+"."+date.split('.')[1].zfill(2)):
+                foreign = int(re.findall('headers="status_level l_type2">(.+?)</td>', res)[0].replace(",", ""))
+                _LABEL_CONFIRMED = f"<:nujeok:687907310923677943> **확진자** : {inf}({increase(leapa)}, 해외유입 +{foreign})\n"
+            else:
+                _LABEL_CONFIRMED = f"<:nujeok:687907310923677943> **확진자** : {inf}({increase(leapa)})\n"
 
             embed = Embed(
                 title=f"🇰🇷 대한민국 코로나19 확진 정보 ({date} 기준)",
-                description=f"<:nujeok:687907310923677943> **확진자** : {inf}({increase(leapa)})\n" \
-                            f"<:wanchi:687907312052076594> **완치** : {cur}({increase(leapb)}) - {per_cur}%\n" \
+                description= _LABEL_CONFIRMED + f"<:wanchi:687907312052076594> **완치** : {cur}({increase(leapb)}) - {per_cur}%\n" \
                             f"<:samang:687907312123510817> **사망** : {dth}({increase(leapc)}) - {per_dth}%\n\n" \
                             f"<:chiryojung:711728328985411616> **치료중** : {active}\n" \
                             f"<:geomsa:687907311301296146> **검사중** : {testing}({increase(leapd)})\n",
@@ -60,15 +70,19 @@ class Status(Cog):
                 with open("./botdata/patient.txt", 'w') as f:
                     f.write(str(t))
 
-                embed2 = Embed(title="🔄 현황 변경 안내")
-                embed2.description = embed.description
-                embed2.color = embed.color
-
                 await utils.makeGraph(t, self.bot)
                 graphch = self.bot.get_channel(int(os.getenv("GRAPH_CHANNEL")))
                 graphmsg = await graphch.send(file=File("./botdata/graph.png"))
-                
-                await utils.send(embed2, ctx, True, graphch)
+                self.db["covid19"]["graphs"].insert_one({
+                    "_id": graphmsg.attachments[0].url,
+                    "createdAt": datetime.datetime.utcnow()
+                })
+
+                embed2 = Embed(title="🔄 현황 변경 안내")
+                embed2.description = embed.description
+                embed2.color = embed.color
+                embed2.set_image(url=graphmsg.attachments[0].url)
+                await utils.send(embed2, ctx, False, graphch)
             return
 
         else:

@@ -26,7 +26,7 @@ class Disaster(Cog):
     @utils.userpos
     async def disaster(self, ctx: Context, *args):
         if not args:
-            await ch.send(f"명령어 사용법 : ``{ctx.prefix}재난문자 [지역]``\n" \
+            await ctx.send(f"명령어 사용법 : ``{ctx.prefix}재난문자 [지역]``\n" \
                     "지역 목록 : ``" + " ".join(_DISASTER_REGION) + "``")
             return
         u = args[0]

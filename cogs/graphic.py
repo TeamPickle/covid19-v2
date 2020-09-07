@@ -55,9 +55,7 @@ class Graphic(Cog):
             for i in range(17):
                 for j in range(len(row)):
                     if row[j] == loc[i]:
-                        draw.text((x2[i], y2[i]), str(sum_confirmed[j]) + "(" + ("▲" + str(confirmed[j]) if confirmed[j] > 0 else "-0") + ")", (0, 0, 0), font=font)
-                    
-
+                        draw.text((x2[i], y2[i]),  str(confirmed[j]) + "(총 " + str(sum_confirmed[j]) + ")", (0, 0, 0), font=font)
 
             img.save('./local/final.png')
             await ctx.send(file=File('./local/final.png'))
