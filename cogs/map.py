@@ -49,132 +49,76 @@ class Map(Cog):
     @command(name="map", aliases=["지도"])
     @utils.userpos
     async def map(self, ctx: Context, *args):
-        args = " ".join(args)
-        async with aiohttp.ClientSession() as session:
-            async with session.get(f"https://map.naver.com/v5/api/search?caller=pcweb&query={args}") as r:
-                status_code = r.status
-                if status_code != 200:
-                    await ctx.send("서버 에러가 발생했습니다.")
-                res = await r.json()
-        await ctx.send(args + "(으)로 검색중입니다.")
+        args = "+".join(args)
 
-        name = "./maps/"+args[0].encode('utf-8').hex()+self.mapver+".png"
+        name = "./maps/"+args.encode('utf-8').hex()+self.mapver+".png"
         if os.path.isfile(name):
             await ctx.send(file=File(name))
             return
-        
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f"https://www.google.co.kr/maps/place/{args}") as r:
+                status_code = r.status
+                if status_code != 200:
+                    await ctx.send("서버 에러가 발생했습니다.")
+                res = await r.text('utf-8')
+        await ctx.send(args + "(으)로 검색중입니다.")
+
         async with ctx.typing():
-            res = res["result"]
-            try:
-                if res["address"]:
-                    if res["address"]["jibunsAddress"]:
-                        jibunAddress = res["address"]["jibunsAddress"]["list"][0]
-                        addressId = jibunAddress["id"]
-                        boundary = jibunAddress["boundary"]
-                    elif res["address"]["roadAddress"]:
-                        jibunAddress = res["address"]["roadAddress"]["list"][0]
-                        addressId = jibunAddress["id"]
-                        boundary = jibunAddress["boundary"]
-                    else:
-                        boundary = None
-                elif res["place"]:
-                    addressId = None
-                    jibunAddress = res["place"]
-                    boundary = jibunAddress["boundary"]
+            xy = re.findall("APP_INITIALIZATION_STATE=\[\[\[(.+?)\]", res)[0].split(',')
+            z = int(re.findall('\[\[\["m",\[(.+?),', res)[0]) + 1
+            
+            #x, y, z = getZoomByBoundary(boundary, 5)
+            # print(boundary)
+
+            #if type(boundary) == dict:  # when search address
+            #    minX, minY, maxX, maxY = map(
+            #        float, boundary.values())
+            #else:  # when search place
+            #    minX, maxY, maxX, minY = map(
+            #        float, boundary)
+
+            x = float(xy[2])
+            y = float(xy[1])
+            minX = x-0.5
+            maxX = x+0.5
+            minY = y-0.5
+            maxY = y+0.5
+            print(x,y,z)
+            x, y = map(int, deg2num(y, x, z))
+            # print(x, y)
+            # name = drawMapByDeg(y, x, z) # 다 꼬였다 에라이
+            img = await getMap(z, x - 2, y - 2, 5,
+                            5, MapType.BASIC)
+            print("done")
+            for i in self.conn.execute(
+                'SELECT * FROM "main"."position" WHERE "lat" BETWEEN {} AND {}  AND "long" BETWEEN {} AND {};'
+                    .format(minY, maxY, minX, maxX)):
+                # date = datetime.date.fromordinal(i[1])
+                # if i[2] != -1:
+                x1, y1 = deg2num(i[5], i[6], z)
+                x1 = int((x1 - x + 2) * _IMAGE_SIZE[0])
+                y1 = int((y1 - y + 2) * _IMAGE_SIZE[1])
+                date = datetime.date.fromordinal(i[1])
+                today = datetime.date.today()
+                days = (today - date).days
+                if days == 0:
+                    color = (0, 0, 255)
+                elif days >= 4:
+                    color = (0, 255, 0)
                 else:
-                    boundary = None
+                    color = (0, 255, 255)
+                # color = int(i[2])
+                # (color & 0xff, color & 0xff00, color & 0xff0000)
+                cv2.circle(img, (x1, y1), z //
+                        2 + 4, (0, 0, 0), -1)
+                cv2.circle(img, (x1, y1), z //
+                        2 + 3, color, -1)
 
-                if boundary:
-                    x, y, z = getZoomByBoundary(boundary, 5)
-                    # print(boundary)
+            print("done")
+            cv2.imwrite(name, img)
+            await ctx.send(file=File(name))
 
-                    if type(boundary) == dict:  # when search address
-                        minX, minY, maxX, maxY = map(
-                            float, boundary.values())
-                    else:  # when search place
-                        minX, maxY, maxX, minY = map(
-                            float, boundary)
-                    minX -= 0.5
-                    maxX += 0.5
-                    minY -= 0.5
-                    maxY += 0.5
-                    # print(x, y, z)
-                    x, y = map(int, deg2num(y, x, z))
-                    # print(x, y)
-                    # name = drawMapByDeg(y, x, z) # 다 꼬였다 에라이
-                    img = await getMap(z, x - 2, y - 2, 5,
-                                    5, MapType.BASIC)
-                    for i in self.conn.execute(
-                        'SELECT * FROM "main"."position" WHERE "lat" BETWEEN {} AND {}  AND "long" BETWEEN {} AND {};'
-                            .format(minY, maxY, minX, maxX)):
-                        # date = datetime.date.fromordinal(i[1])
-                        # if i[2] != -1:
-                        x1, y1 = deg2num(i[5], i[6], z)
-                        x1 = int((x1 - x + 2) * _IMAGE_SIZE[0])
-                        y1 = int((y1 - y + 2) * _IMAGE_SIZE[1])
-                        date = datetime.date.fromordinal(i[1])
-                        today = datetime.date.today()
-                        days = (today - date).days
-                        if days == 0:
-                            color = (0, 0, 255)
-                        elif days >= 4:
-                            color = (0, 255, 0)
-                        else:
-                            color = (0, 255, 255)
-                        # color = int(i[2])
-                        # (color & 0xff, color & 0xff00, color & 0xff0000)
-                        cv2.circle(img, (x1, y1), z //
-                                2 + 4, (0, 0, 0), -1)
-                        cv2.circle(img, (x1, y1), z //
-                                2 + 3, color, -1)
-
-                    if addressId:
-                        async with aiohttp.ClientSession() as session:
-                            async with session.get("https://map.naver.com/v5/api/wfs/stargate?output=geojson&targetcrs=epsg:4326&codetype=naver&request=codeToFeatures&level={}&keyword={}".format(z, addressId)) as res_1:
-                                feature = await res_1.json()
-                        geometry = feature["features"][0]["geometry"]
-                        coordss = geometry["coordinates"]
-                        if geometry["type"] == "MultiPolygon":
-                            for coords in coordss:
-                                codArr = None
-                                for coord in coords[0]:
-                                    x1, y1 = deg2num(
-                                        coord[1], coord[0], z)
-                                    x1 = int(
-                                        (x1 - x + 2) * _IMAGE_SIZE[0])
-                                    y1 = int(
-                                        (y1 - y + 2) * _IMAGE_SIZE[1])
-                                    try:
-                                        codArr = np.append(
-                                            codArr, [[x1, y1]], axis=0)
-                                    except ValueError:
-                                        codArr = [[x1, y1]]
-                                cv2.polylines(
-                                    img, [codArr], False, (255, 0, 0), 2)
-                        elif geometry["type"] == "Polygon":
-                            for coords in coordss:
-                                codArr = None
-                                for coord in coords:
-                                    x1, y1 = deg2num(
-                                        coord[1], coord[0], z)
-                                    x1 = int(
-                                        (x1 - x + 2) * _IMAGE_SIZE[0])
-                                    y1 = int(
-                                        (y1 - y + 2) * _IMAGE_SIZE[1])
-                                    try:
-                                        codArr = np.append(
-                                            codArr, [[x1, y1]], axis=0)
-                                    except ValueError:
-                                        codArr = [[x1, y1]]
-                                cv2.polylines(
-                                    img, [codArr], False, (0, 0, 255), 2)
-
-                    cv2.imwrite(name, img)
-                    await ctx.send(file=File(name))
-                else:
-                    await ctx.send("검색결과가 없습니다. 좀더 넓은 범위로 검색해주세요.")
-            except KeyError:
-                await ctx.send("해당 지역을 찾을 수 없습니다.")
     
     @command(name="genmap")
     @utils.checkadmin()
@@ -247,7 +191,7 @@ def deg2num(lat_deg, lon_deg, zoom, offset=None):
 
         return (xtile, ytile)
 
-
+'''
 def getZoomByBoundary(boundary, side):
     if type(boundary) == dict:  # when search address
         minX, minY, maxX, maxY = map(float, boundary.values())
@@ -258,7 +202,7 @@ def getZoomByBoundary(boundary, side):
         right, bottom = deg2num(maxY, maxX, zoom)
         if right - left < side - 1 and bottom - top < side - 1:
             return ((minX + maxX) / 2, (minY + maxY) / 2, zoom)
-
+'''
 
 async def getMap(zoom, x, y, dx, dy, mapType):
     bigbig = None
