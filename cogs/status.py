@@ -46,7 +46,7 @@ class Status(Cog):
             
             foreign_time = re.findall('<p class="info"><span> (.+?)</span>', res)[0]
             if foreign_time.startswith(date.split('.')[0].zfill(2)+"."+date.split('.')[1].zfill(2)):
-                foreign = int(re.findall('headers="status_level l_type2">(.+?)</td>', res)[0].replace(",", ""))
+                foreign = int(re.findall('headers="status_level l_type3">(.+?)</td>', res)[0].replace(",", ""))
                 _LABEL_CONFIRMED = f"<:nujeok:687907310923677943> **확진자** : {inf}({increase(leapa)}, 해외유입 +{foreign})\n"
             else:
                 _LABEL_CONFIRMED = f"<:nujeok:687907310923677943> **확진자** : {inf}({increase(leapa)})\n"
