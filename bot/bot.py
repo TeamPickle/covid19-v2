@@ -9,6 +9,9 @@ class CovidBot(AutoShardedBot):
     name = "CovidBot"
     def __init__(self, *args, **kwargs):
         kwargs.setdefault("command_prefix", get_command_prefix)
+        self.logChannel = None
+        self.graphChannel = None
+
         intents: Intents = Intents.none()
         intents.messages = True
         super().__init__(*args, help_command=None, intents=intents, **kwargs)
@@ -24,7 +27,6 @@ class CovidBot(AutoShardedBot):
         self.logger.setLevel('DEBUG')
 
         self.pickle_db = PickleDB()
-        self.get_log_channel()
 
     def get_logger(self, cog):
         name = cog.__class__.__name__
@@ -40,11 +42,12 @@ class CovidBot(AutoShardedBot):
         self.logger.info("Bot ready")
         if token := os.getenv("DBL_TOKEN"):
             dbl.DBLClient(self, token)
-
-    async def get_log_channel(self):
-      logChannel = os.getenv("LOG_CHANNEL")
-      if logChannel:
-        self.logChannel = await self.fetch_channel(int(logChannel))
+        logChannel = os.getenv("LOG_CHANNEL")
+        if logChannel:
+            self.logChannel = await self.fetch_channel(int(logChannel))
+        graphChannel = os.getenv("GRAPH_CHANNEL")
+        if graphChannel:
+            self.graphChannel = await self.fetch_channel(int(graphChannel))
 
     async def on_command_error(self, ctx: Context, e: Exception):
         if isinstance(e, CommandNotFound):

@@ -71,8 +71,7 @@ class Status(Cog):
                     f.write(str(t))
 
                 await utils.makeGraph(t, self.bot)
-                graphch = self.bot.get_channel(int(os.getenv("GRAPH_CHANNEL")))
-                graphmsg = await graphch.send(file=File("./botdata/graph.png"))
+                graphmsg = await self.bot.graphChannel.send(file=File("./botdata/graph.png"))
                 self.db["covid19"]["graphs"].insert_one({
                     "_id": graphmsg.attachments[0].url,
                     "createdAt": datetime.datetime.utcnow()
