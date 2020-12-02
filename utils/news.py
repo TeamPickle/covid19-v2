@@ -14,7 +14,7 @@ async def send(embed: Embed, ctx: Context, iscurrent: bool, channel: TextChannel
     if channel == None:
         channel = ctx.channel
 
-    await bot.get_channel(channel.id).send("start")
+    await channel.send("start")
     j = 0
     dnd = list(db["covid19"]["dnd"].find())
     dnd = list(map(lambda x: x['_id'], dnd))
@@ -34,7 +34,7 @@ async def send(embed: Embed, ctx: Context, iscurrent: bool, channel: TextChannel
             j += 1
             pass
     i = len(bot.guilds)
-    await bot.get_channel(channel.id).send(f"{i - j}/{i}")
+    await channel.send(f"{i - j}/{i}")
 
     if iscurrent and os.getenv("BETA")=="0":
         autocall = list(db["covid19"]["autocall"].find())
@@ -45,4 +45,4 @@ async def send(embed: Embed, ctx: Context, iscurrent: bool, channel: TextChannel
                 await bot.get_user(userid).send(embed=embed)
             except:
                 pass
-        await bot.get_channel(channel.id).send(f"autocall done: {len(autocall)}")
+        await channel.send(f"autocall done: {len(autocall)}")
