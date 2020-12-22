@@ -13,6 +13,10 @@ python3.8, venv사용을 권장합니다.
 python3.8 -m venv .venv
 source ./.venv/bin/active
 pip install -r requirements.txt
+sudo apt update
+sudo apt install libgl1-mesa-glx fonts-nanum
+rm ~/.cache/matplotlib/*
+python run.py
 ```
 
 ## 기능
