@@ -28,6 +28,15 @@ class CovidBot(AutoShardedBot):
 
         self.pickle_db = PickleDB()
 
+        self.__init_module_logger()
+
+    def __init_module_logger(self):
+        logger = logging.getLogger('discord')
+        logger.setLevel(logging.DEBUG)
+        handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+        handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+        logger.addHandler(handler)
+
     def get_logger(self, cog):
         name = cog.__class__.__name__
         logger = logging.getLogger(name and self.name + "." + name or self.name or self.__class__.__name__)
