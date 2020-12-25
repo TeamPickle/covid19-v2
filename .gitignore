@@ -7,3 +7,4 @@ local/final.png
 *.db
 maps/*.png
 botdata/
+*.log
