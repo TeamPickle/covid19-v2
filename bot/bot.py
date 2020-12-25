@@ -12,9 +12,7 @@ class CovidBot(AutoShardedBot):
         self.logChannel = None
         self.graphChannel = None
 
-        intents: Intents = Intents.none()
-        intents.messages = True
-        super().__init__(*args, help_command=None, intents=intents, **kwargs)
+        super().__init__(*args, help_command=None, **kwargs)
 
         self.logger = logging.getLogger(self.name or self.__class__.__name__)
         formatter = logging.Formatter("[%(asctime)s %(levelname)s] (%(name)s: %(filename)s:%(lineno)d) > %(message)s")
