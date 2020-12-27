@@ -56,7 +56,7 @@ class Status(Cog):
                 _LABEL_CONFIRMED = f"<:nujeok:687907310923677943> **확진자** : {inf}({increase(leapa)})\n"
 
             embed = Embed(
-                title=f"🇰🇷 대한민국 코로나19 확진 정보 ({date} 기준)",
+                title=f"🇰🇷 대한민국 코로나19 확진 정보 ({update_time} 기준)",
                 description= _LABEL_CONFIRMED + f"<:wanchi:687907312052076594> **완치** : {cur}({increase(leapb)}) - {per_cur}%\n" \
                             f"<:samang:687907312123510817> **사망** : {dth}({increase(leapc)}) - {per_dth}%\n\n" \
                             f"<:chiryojung:711728328985411616> **치료중** : {active}\n" \
