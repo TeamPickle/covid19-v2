@@ -49,17 +49,18 @@ class Help(Cog):
             await self.__detailHelp(ctx, *args)
     
     async def __fullHelp(self, ctx: Context, *args):
-        mode = utils.get_mode(ctx)
+        mode = await utils.get_mode(ctx)
 
         settings = _GLOBAL_SETTING
-        if mode == utils.Mode.SERVER:
-            title = _SERVER_TITLE
-            subCommand = _SERVER_COMMAND
-            settings += _SERVER_SETTING
-        elif mode == utils.Mode.DM:
+        if mode == utils.Mode.DM:
             title = _DM_TITLE
             subCommand = _DM_COMMAND
             settings += _DM_SETTING
+        else:
+            title = _SERVER_TITLE
+            subCommand = _SERVER_COMMAND
+            settings += _SERVER_SETTING
+            
             
         embed = Embed(
             title=title.format(prefix=ctx.prefix),
