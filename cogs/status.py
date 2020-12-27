@@ -41,11 +41,15 @@ class Status(Cog):
                 async with session.get("http://ncov.mohw.go.kr/bdBoardList_Real.do?brdId=1&brdGubun=13") as r:
                     res = await r.text('utf-8')
 
-            date = t["date"][-1]
             active = t["active"][-1]
             
-            foreign_time = re.findall('<p class="info"><span> (.+?)</span>', res)[0]
-            if foreign_time.startswith(date.split('.')[0].zfill(2)+"."+date.split('.')[1].zfill(2)):
+            update_time = re.findall('<p class="info"><span> (.+?)</span>', res)[0]
+            month = int(update_time.split('.')[0])
+            day = int(update_time.split('.')[1])
+
+            nowtime = datetime.datetime.utcnow() - datetime.timedelta(hours=9)
+
+            if month == nowtime.month and day == nowtime.day:
                 foreign = int(re.findall('headers="status_level l_type3">(.+?)</td>', res)[0].replace(",", ""))
                 _LABEL_CONFIRMED = f"<:nujeok:687907310923677943> **확진자** : {inf}({increase(leapa)}, 해외유입 +{foreign})\n"
             else:
