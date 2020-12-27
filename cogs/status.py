@@ -41,22 +41,18 @@ class Status(Cog):
                 async with session.get("http://ncov.mohw.go.kr/bdBoardList_Real.do?brdId=1&brdGubun=13") as r:
                     res = await r.text('utf-8')
 
+            date = t["date"][-1]
             active = t["active"][-1]
             
-            update_time = re.findall('<p class="info"><span> (.+?)</span>', res)[0]
-            month = int(update_time.split('.')[0])
-            day = int(update_time.split('.')[1])
-
-            nowtime = datetime.datetime.utcnow() - datetime.timedelta(hours=9)
-
-            if month == nowtime.month and day == nowtime.day:
+            foreign_time = re.findall('<p class="info"><span> (.+?)</span>', res)[0]
+            if foreign_time.startswith(date.split('.')[0].zfill(2)+"."+date.split('.')[1].zfill(2)):
                 foreign = int(re.findall('headers="status_level l_type3">(.+?)</td>', res)[0].replace(",", ""))
                 _LABEL_CONFIRMED = f"<:nujeok:687907310923677943> **확진자** : {inf}({increase(leapa)}, 해외유입 +{foreign})\n"
             else:
                 _LABEL_CONFIRMED = f"<:nujeok:687907310923677943> **확진자** : {inf}({increase(leapa)})\n"
 
             embed = Embed(
-                title=f"🇰🇷 대한민국 코로나19 확진 정보 ({update_time})",
+                title=f"🇰🇷 대한민국 코로나19 확진 정보 ({date} 기준)",
                 description= _LABEL_CONFIRMED + f"<:wanchi:687907312052076594> **완치** : {cur}({increase(leapb)}) - {per_cur}%\n" \
                             f"<:samang:687907312123510817> **사망** : {dth}({increase(leapc)}) - {per_dth}%\n\n" \
                             f"<:chiryojung:711728328985411616> **치료중** : {active}\n" \
