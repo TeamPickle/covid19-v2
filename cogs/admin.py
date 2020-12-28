@@ -86,14 +86,21 @@ class Admin(Cog):
         t = eval(re.findall(
             'Global":{"KR":(.+?),"global"', res)[0])
 
+        async with aiohttp.ClientSession() as session:
+            async with session.get("http://ncov.mohw.go.kr/bdBoardList_Real.do?brdId=1&brdGubun=13") as r:
+                res = await r.text('utf-8')
+
+        update_time = re.findall('<p class="info"><span> (.+?)</span>', res)[0]
+        day = int(update_time.split('.')[1])
+
         with open("./botdata/patient.txt", 'r') as f:
             pat = f.read()
 
-        if pat != str(t):
+        if pat != update_time:
             with open("./botdata/patient.txt", 'w') as f:
-                f.write(str(t))
+                f.write(update_time)
         
-        await utils.makeGraph(t, self.bot)
+        await utils.makeGraph(t, day, self.bot)
         graphmsg: Message = await ctx.send(file=File("./botdata/graph.png"))
         self.db["covid19"]["graphs"].insert_one({
             "_id": graphmsg.attachments[0].url,

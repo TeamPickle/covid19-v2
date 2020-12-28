@@ -4,9 +4,12 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import datetime
 
-async def makeGraph(t, bot: CovidBot):
-    dtnow = datetime.datetime.utcnow() - datetime.timedelta(hours=9)
-    
+async def makeGraph(t, update_day, bot: CovidBot):
+    dtnow = datetime.datetime.utcnow() + datetime.timedelta(hours=9)
+
+    if update_day != dtnow.day:
+        dtnow -= datetime.timedelta(days=1)
+
     x = list(dtnow - datetime.timedelta(days=(9-i)) for i in range(10))
     y1 = list(int(i) for i in t['confirmed'][-10:])
     y2 = list(int(i) for i in t['released'][-10:])

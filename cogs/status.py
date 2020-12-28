@@ -47,7 +47,7 @@ class Status(Cog):
             month = int(update_time.split('.')[0])
             day = int(update_time.split('.')[1])
 
-            nowtime = datetime.datetime.utcnow() - datetime.timedelta(hours=9)
+            nowtime = datetime.datetime.utcnow() + datetime.timedelta(hours=9)
 
             if month == nowtime.month and day == nowtime.day:
                 foreign = int(re.findall('headers="status_level l_type3">(.+?)</td>', res)[0].replace(",", ""))
@@ -70,11 +70,11 @@ class Status(Cog):
             with open("./botdata/patient.txt", 'r') as f:
                 pat = f.read()
 
-            if pat != str(t):
+            if pat != update_time:
                 with open("./botdata/patient.txt", 'w') as f:
-                    f.write(str(t))
+                    f.write(update_time)
 
-                await utils.makeGraph(t, self.bot)
+                await utils.makeGraph(t, day, self.bot)
                 graphmsg = await self.bot.graphChannel.send(file=File("./botdata/graph.png"))
                 self.db["covid19"]["graphs"].insert_one({
                     "_id": graphmsg.attachments[0].url,
@@ -85,7 +85,7 @@ class Status(Cog):
                 embed2.description = embed.description
                 embed2.color = embed.color
                 embed2.set_image(url=graphmsg.attachments[0].url)
-                await utils.send(embed2, ctx, False, graphch)
+                await utils.send(embed2, ctx, False, self.bot.graphChannel)
             return
 
         else:
