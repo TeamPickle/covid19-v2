@@ -26,8 +26,6 @@ class CovidBot(AutoShardedBot):
 
         self.pickle_db = PickleDB()
 
-        self.__init_module_logger()
-
     def __init_module_logger(self):
         logger = logging.getLogger('discord')
         logger.setLevel(logging.DEBUG)
