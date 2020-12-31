@@ -14,7 +14,7 @@ python3.8 -m venv .venv
 source ./.venv/bin/active
 pip install -r requirements.txt
 sudo apt update
-sudo apt install libgl1-mesa-glx fonts-nanum
+sudo apt install libgl1-mesa-glx fonts-nanum -y
 rm ~/.cache/matplotlib/*
 python run.py
 ```
