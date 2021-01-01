@@ -50,13 +50,14 @@ class Status(Cog):
             active = t["active"][-1]
             foreign = getCountryData('KR')["fromOversea"]
             
-            _LABEL_CONFIRMED = f"<:nujeok:687907310923677943> **확진자** : {inf}({increase(leapa)}, 해외유입 +{foreign})\n"
+            _LABEL_CONFIRMED = 
             update_time = re.findall('<p class="info"><span>(.*)<\/span>', ncov)[0]
             day = update_time.split(".")[1]
 
             embed = Embed(
                 title=f"🇰🇷 대한민국 코로나19 확진 정보 ({update_time} 기준)",
-                description= _LABEL_CONFIRMED + f"<:wanchi:687907312052076594> **완치** : {cur}({increase(leapb)}) - {per_cur}%\n" \
+                description= f"<:nujeok:687907310923677943> **확진자** : {inf}({increase(leapa)}, 해외유입 +{foreign})\n" \
+                            f"<:wanchi:687907312052076594> **완치** : {cur}({increase(leapb)}) - {per_cur}%\n" \
                             f"<:samang:687907312123510817> **사망** : {dth}({increase(leapc)}) - {per_dth}%\n\n" \
                             f"<:chiryojung:711728328985411616> **치료중** : {active}\n" \
                             f"<:geomsa:687907311301296146> **검사중** : {testing}({increase(leapd)})\n",
