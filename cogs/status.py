@@ -1,8 +1,10 @@
 from discord import Embed, Forbidden, File
 from discord.ext.commands import Cog, Context, command
 from bot import CovidBot
-import aiohttp, re, math, asyncio, os, datetime
+import aiohttp, re, math, asyncio, datetime
 import utils
+import json
+from dateutil.parser import parse
 
 _DISASTER_REGION = ["강원", "경기", "경남", "경북", "광주", "대구", "대전",
                    "부산", "서울", "울산", "인천", "전남", "전북", "제주", "충남", "충북", "세종"]
@@ -21,39 +23,36 @@ class Status(Cog):
         # TODO 구 데이터?
         increase = lambda x: f"▲{x}" if x > 0 else "-0"
 
+        async with aiohttp.ClientSession() as session:
+            async with session.get('https://coronaboard.kr/') as r:
+                res = await r.text('utf-8')
+            async with session.get('http://ncov.mohw.go.kr/bdBoardList_Real.do?brdId=1&brdGubun=13') as r:
+                ncov = await r.text('utf-8')
+        data: dict = json.loads(re.findall('jsonData = (.*?);', res)[0])
+        getCountryData = lambda country: next((x for x in data['statGlobalNow'] if x['cc'] == country), None)
+        date = parse(data['KR']['chartByAge']['time'])
+
         if len(args) == 0:
-            async with aiohttp.ClientSession() as session:
-                async with session.get("https://coronaboard.kr/") as r:
-                    t = eval(re.findall('{"KR":(.+?),"global"', await r.text('utf-8'))[0])
-                    t2 = eval(re.findall('"chartTesting":(.+?),"stat', await r.text('utf-8'))[0])
+            t = data['chartForGlobal']['KR']
+            t2 = data['KR']['chartTesting']
             inf = t["confirmed_acc"][-1]
             cur = t["released_acc"][-1]
             dth = t["death_acc"][-1]
             leapa = t["confirmed"][-1]
             leapb = t["released"][-1]
             leapc = t["death"][-1]
+
             testing = t2["testing"][-1]
             leapd = testing - t2["testing"][-2]
             per_dth = round(dth/inf*100, 1)
             per_cur = round(cur/inf*100, 1)
 
-            async with aiohttp.ClientSession() as session:
-                async with session.get("http://ncov.mohw.go.kr/bdBoardList_Real.do?brdId=1&brdGubun=13") as r:
-                    res = await r.text('utf-8')
-
             active = t["active"][-1]
+            foreign = getCountryData('KR')["fromOversea"]
             
-            update_time = re.findall('<p class="info"><span> (.+?)</span>', res)[0]
-            month = int(update_time.split('.')[0])
-            day = int(update_time.split('.')[1])
-
-            nowtime = datetime.datetime.utcnow() + datetime.timedelta(hours=9)
-
-            if month == nowtime.month and day == nowtime.day:
-                foreign = int(re.findall('headers="status_level l_type3">(.+?)</td>', res)[0].replace(",", ""))
-                _LABEL_CONFIRMED = f"<:nujeok:687907310923677943> **확진자** : {inf}({increase(leapa)}, 해외유입 +{foreign})\n"
-            else:
-                _LABEL_CONFIRMED = f"<:nujeok:687907310923677943> **확진자** : {inf}({increase(leapa)})\n"
+            _LABEL_CONFIRMED = f"<:nujeok:687907310923677943> **확진자** : {inf}({increase(leapa)}, 해외유입 +{foreign})\n"
+            update_time = re.findall('<p class="info"><span>(.*)<\/span>', ncov)[0]
+            day = update_time.split(".")[1]
 
             embed = Embed(
                 title=f"🇰🇷 대한민국 코로나19 확진 정보 ({update_time} 기준)",
@@ -63,6 +62,7 @@ class Status(Cog):
                             f"<:geomsa:687907311301296146> **검사중** : {testing}({increase(leapd)})\n",
                 color=0x006699
             )
+            print(embed.description)
             embed.set_footer(text="지자체에서 자체 집계한 자료와는 차이가 있을 수 있습니다.")
             embed.set_image(url=self.db["covid19"]["graphs"].find_one(sort=[("createdAt", -1)])["_id"])
             await ctx.send(embed=embed)
@@ -93,10 +93,6 @@ class Status(Cog):
             if arg in _DISASTER_ALIAS.keys():
                 arg = _DISASTER_ALIAS[arg]
             
-            async with aiohttp.ClientSession() as session:
-                async with session.get('https://coronaboard.kr/') as r:
-                    res = await r.text('utf-8')
-            t: dict = eval('{"CN":' + re.findall(',"CN":(.+?),"North', res)[0] + "}")
             
             
             if arg in t.values() or arg in ["오스트레일리아", "우리나라", "한국"]:
