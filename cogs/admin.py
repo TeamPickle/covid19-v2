@@ -90,7 +90,7 @@ class Admin(Cog):
             async with session.get("http://ncov.mohw.go.kr/bdBoardList_Real.do?brdId=1&brdGubun=13") as r:
                 res = await r.text('utf-8')
 
-        update_time = re.findall('<p class="info"><span> (.+?)</span>', res)[0]
+        update_time = re.findall('<p class="info"><span>(.*)<\/span>', res)[0]
         day = int(update_time.split('.')[1])
 
         with open("./botdata/patient.txt", 'r') as f:
